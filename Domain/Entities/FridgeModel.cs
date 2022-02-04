@@ -1,0 +1,14 @@
+﻿using System;
+using System.Collections.Generic;
+#nullable enable
+
+namespace Domain.Entities
+{
+    public class FridgeModel
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; } = null!;
+        public int? ProductionYear { get; set; }
+        public List<Fridge> Fridges { get; set; } = new();
+    }
+}
