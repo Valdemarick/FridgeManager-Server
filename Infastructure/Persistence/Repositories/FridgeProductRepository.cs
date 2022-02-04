@@ -1,4 +1,5 @@
-﻿using Domain.Entities;
+﻿using Application.Common.Interfaces;
+using Domain.Entities;
 using Infastructure.Persistence.Contexts;
 using System;
 using System.Collections.Generic;
