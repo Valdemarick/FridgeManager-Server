@@ -10,3 +10,4 @@ namespace Application.Models.Fridge
         public string Manufacturer { get; set; } = null!;
         public int? ProductionYear { get; set; }
     }
+}
