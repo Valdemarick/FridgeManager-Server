@@ -1,4 +1,5 @@
-﻿using Domain.Entities;
+﻿using Application.Common.Interfaces;
+using Domain.Entities;
 using Infastructure.Persistence.Configurations;
 using Microsoft.EntityFrameworkCore;
 

@@ -1,6 +1,7 @@
 ﻿using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
 namespace Infastructure.Persistence.Configurations
 {
     public class ProductConfiguration : IEntityTypeConfiguration<Product>
