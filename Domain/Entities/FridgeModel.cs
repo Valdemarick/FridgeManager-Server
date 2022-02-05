@@ -4,9 +4,8 @@ using System.Collections.Generic;
 
 namespace Domain.Entities
 {
-    public class FridgeModel
+    public class FridgeModel : BaseEntity
     {
-        public Guid Id { get; set; }
         public string Name { get; set; } = null!;
         public int? ProductionYear { get; set; }
         public List<Fridge> Fridges { get; set; } = new();

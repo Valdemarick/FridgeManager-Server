@@ -3,7 +3,7 @@
 
 namespace Domain.Entities
 {
-    public class FridgeProduct
+    public class FridgeProduct : BaseEntity
     {
         public Guid FridgeId { get; set; }
         public Fridge Fridge { get; set; } = null!;
