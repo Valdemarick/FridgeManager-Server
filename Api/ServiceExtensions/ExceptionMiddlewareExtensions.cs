@@ -3,6 +3,7 @@ using Application.Models.Errors;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
+using System.IO;
 using System.Net;
 
 namespace Api.ServiceExtensions

@@ -4,9 +4,9 @@ using Domain.Entities;
 
 namespace Application.Common.Mappings
 {
-    public class ProductsInFridgeProfile : Profile
+    public class FridgeProductProfile : Profile
     {
-        public ProductsInFridgeProfile()
+        public FridgeProductProfile()
         {
             CreateMap<FridgeProduct, FridgeProductDto>()
                 .ForMember(dest => dest.ProductId,
