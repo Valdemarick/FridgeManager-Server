@@ -27,7 +27,7 @@ namespace Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetFridges()
         {
-            var fridges = await _unitOfWork.Fridge.GetAllFridgesAsync(false);
+            var fridges = await _unitOfWork.Fridge.GetAllAsync();
 
             var fridgeDtos = _mapper.Map<List<FridgeDto>>(fridges);
 
@@ -38,7 +38,7 @@ namespace Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetFridgeById(Guid id)
         {
-            var fridge = await _unitOfWork.Fridge.GetFridgeByIdAsync(id, false);
+            var fridge = await _unitOfWork.Fridge.GetByIdAsync(id);
 
             if (fridge == null)
             {
