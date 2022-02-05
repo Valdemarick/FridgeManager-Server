@@ -1,16 +1,19 @@
-﻿using System;
+﻿using Domain.Entities;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 
 namespace Application.Common.Interfaces
 {
-    public interface IGenericRepository<TEntity> where TEntity : class
+    public interface IGenericRepository<TEntity> where TEntity : BaseEntity
     {
-        IQueryable<TEntity> FindAll(bool tracking);
-        IQueryable<TEntity> FindByCondition(Expression<Func<TEntity, bool>> expression,
-                                      bool tracking);
-        void Create(TEntity entity);
-        void Update(TEntity entity);
-        void Delete(TEntity entity);
+        Task<IEnumerable<TEntity>> GetAllAsync();
+        Task<TEntity> GetByIdAsync(Guid id);
+        Task<IEnumerable<TEntity>> FindByConditionAsync(Expression<Func<TEntity, bool>> expression);
+        Task CreateAsync(TEntity entity);
+        Task UpdateAsync(TEntity entity);
+        Task DeleteAsync(Guid id);
     }
 }

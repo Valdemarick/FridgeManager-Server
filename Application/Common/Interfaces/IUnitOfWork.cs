@@ -1,4 +1,6 @@
-﻿namespace Application.Common.Interfaces
+﻿using System.Threading.Tasks;
+
+namespace Application.Common.Interfaces
 {
     public interface IUnitOfWork
     {
@@ -7,6 +9,6 @@
         IFridgeModelRepository FridgeModel { get; }
         IFridgeProductRepository FridgeProduct { get; }
 
-        void SaveAsync();
+        Task SaveAsync();
     }
 }
