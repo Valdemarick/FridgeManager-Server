@@ -11,6 +11,8 @@ namespace Application.Common.Mappings
             CreateMap<Product, ProductDto>();
 
             CreateMap<ProductDto, Product>();
+
+            CreateMap<ProductForCreationDto, Product>();
         }
     }
 }
