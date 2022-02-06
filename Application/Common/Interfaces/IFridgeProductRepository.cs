@@ -7,6 +7,6 @@ namespace Application.Common.Interfaces
 {
     public interface IFridgeProductRepository : IGenericRepository<FridgeProduct>
     {
-        //Task<IEnumerable<FridgeProduct>> GetFridgeProductByFridgeIdAsync(Guid firdgeId, bool tracking);
+        Task<IEnumerable<FridgeProduct>> GetFridgeProductByFridgeIdAsync(Guid fridgeId);
     }
 }

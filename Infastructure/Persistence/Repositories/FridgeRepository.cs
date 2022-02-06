@@ -4,6 +4,7 @@ using Infastructure.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Infastructure.Persistence.Repositories
@@ -13,9 +14,15 @@ namespace Infastructure.Persistence.Repositories
         public FridgeRepository(ApplicationContext context, ILoggerManager logger) : base(context, logger) { }
 
         public override async Task<IEnumerable<Fridge>> GetAllAsync() =>
-            await _appContext.Set<Fridge>().Include(f => f.FridgeModel).ToListAsync();
+            await _appContext.Set<Fridge>()
+            .Include(f => f.FridgeModel)
+            .AsNoTracking()
+            .ToListAsync();
 
         public override async Task<Fridge> GetByIdAsync(Guid id) =>
-            await _appContext.Set<Fridge>().Include(f => f.FridgeModel).SingleOrDefaultAsync();
+            await _appContext.Set<Fridge>()
+            .Include(f => f.FridgeModel)
+            .AsNoTracking()
+            .SingleOrDefaultAsync(f => f.Id.Equals(id));
     }
 }
