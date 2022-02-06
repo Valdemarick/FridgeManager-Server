@@ -37,9 +37,6 @@ namespace Infastructure.Persistence.Repositories
             _appContext.Set<TEntity>().Remove(existing);
         }
 
-        public virtual async Task<IEnumerable<TEntity>> FindByConditionAsync(Expression<Func<TEntity, bool>> expression) =>
-            await _appContext.Set<TEntity>().Where(expression).ToListAsync();
-
         public virtual async Task<IEnumerable<TEntity>> GetAllAsync() =>
             await _appContext.Set<TEntity>().ToListAsync();
 
