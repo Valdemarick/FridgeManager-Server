@@ -1,4 +1,4 @@
-﻿using System;
+﻿using Domain.Common;
 using System.Collections.Generic;
 #nullable enable
 
