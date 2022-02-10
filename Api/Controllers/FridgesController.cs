@@ -36,13 +36,13 @@ namespace Api.Controllers
 
         [Route("{id}")]
         [HttpGet]
-        public async Task<IActionResult> GetFridgeById(Guid id)
+        public async Task<IActionResult> GetFridgeById([FromRoute] Guid id)
         {
             var fridge = await _unitOfWork.Fridge.GetByIdAsync(id);
 
             if (fridge == null)
             {
-                _logger.LogInfo("");
+                _logger.LogInfo($"A fridge with id: {id} doesn't exist in the database");
                 return NotFound();
             }
 
