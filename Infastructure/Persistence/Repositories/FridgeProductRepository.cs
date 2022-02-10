@@ -17,9 +17,31 @@ namespace Infastructure.Persistence.Repositories
             await _appContext.Set<FridgeProduct>()
             .Where(fp => fp.FridgeId.Equals(fridgeId))
             .Include(fp => fp.Product)
-            .OrderBy(p => p.Product.Name)
             .AsNoTracking()
             .ToListAsync();
 
+        public async Task<bool> HasFridgeAndProductAsync(Guid fridgeId, Guid productId) =>
+            await _appContext.Set<FridgeProduct>()
+            .AnyAsync(fp => fp.FridgeId.Equals(fridgeId) && fp.ProductId.Equals(productId));
+
+        public async Task<FridgeProduct> GetFridgeProdcutById(Guid fridgeId, Guid productId) =>
+            await _appContext.Set<FridgeProduct>()
+            .Where(fp => fp.FridgeId.Equals(fridgeId) && fp.ProductId.Equals(productId))
+            .AsNoTracking() //?????
+            .SingleOrDefaultAsync();
+
+        public async Task DeleteByCompositeKey(Guid fridgeId, Guid productId)
+        {
+            var existing = await _appContext.Set<FridgeProduct>().FindAsync(fridgeId, productId);
+
+            if (existing == null)
+            {
+                _logger.LogInfo($"The cover doesn't exist in the database");
+                return;
+                //return NotFound();
+            }
+
+            _appContext.Set<FridgeProduct>().Remove(existing);
+        }
     }
 }
