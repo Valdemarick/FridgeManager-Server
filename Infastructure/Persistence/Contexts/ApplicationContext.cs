@@ -10,6 +10,7 @@ namespace Infastructure.Persistence.Contexts
         public DbSet<Fridge> Fridges { get; set; }
         public DbSet<FridgeModel> FridgeModels { get; set; }
         public DbSet<Product> Products { get; set; }
+        public DbSet<FridgeProduct> FridgeProducts { get; set; }
 
         public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options) { }
 
