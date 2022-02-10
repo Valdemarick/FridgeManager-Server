@@ -2,6 +2,7 @@
 using Application.Models.Fridge;
 using Application.Models.Product;
 using AutoMapper;
+using Domain.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -29,7 +30,6 @@ namespace Api.Controllers
         public async Task<IActionResult> GetProducts()
         {
             var products = await _unitOfWork.Product.GetAllAsync();
-
             var productDtos = _mapper.Map<List<ProductDto>>(products);
 
             return Ok(productDtos);
@@ -37,13 +37,13 @@ namespace Api.Controllers
 
         [Route("{id}")]
         [HttpGet]
-        public async Task<IActionResult> GetProductById(Guid id)
+        public async Task<IActionResult> GetProductById([FromRoute] Guid id)
         {
             var product = await _unitOfWork.Product.GetByIdAsync(id);
 
             if (product == null)
             {
-                _logger.LogInfo($"The product with id: {id} dpesn't exist in the database");
+                _logger.LogInfo($"А product with id: {id} doesn't exist in the database");
                 return NotFound();
             }
 
@@ -52,23 +52,23 @@ namespace Api.Controllers
             return Ok(productDto);
         }
 
-        //[Route("fridge/{fridgeId}")]
-        //[HttpGet]
-        //public async Task<IActionResult> GetProductsByFridgeId(Guid fridgeId)
-        //{
-        //    var fridge = await _unitOfWork.Fridge.GetByIdAsync(fridgeId, false);
+        [HttpPost]
+        public async Task<IActionResult> CreateProduct([FromBody] ProductForCreationDto productDto)
+        {
+            if (productDto == null)
+            {
+                _logger.LogInfo($"The sent object is null");
+                return BadRequest();
+            }
 
-        //    if (fridge == null)
-        //    {
-        //        _logger.LogInfo($"");
-        //        return NotFound();
-        //    }
+            var product = _mapper.Map<Product>(productDto);
 
-        //    var products = await _unitOfWork.FridgeProduct.GetFridgeProductByFridgeIdAsync(fridgeId, false);
+            await _unitOfWork.Product.CreateAsync(product);
+            await _unitOfWork.SaveAsync();
 
-        //    var productDtos = _mapper.Map<List<FridgeProductDto>>(products);
+            var productToReturn = _mapper.Map<ProductDto>(product);
 
-        //    return Ok(productDtos);
-        //}
+            return CreatedAtRoute(nameof(GetProductById), new { id = productToReturn.Id }, productToReturn);
+        }
     }
 }
