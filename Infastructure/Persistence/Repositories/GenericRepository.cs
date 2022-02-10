@@ -1,11 +1,9 @@
 ﻿using Application.Common.Interfaces;
-using Domain.Entities;
+using Domain.Common;
 using Infastructure.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace Infastructure.Persistence.Repositories
@@ -31,6 +29,7 @@ namespace Infastructure.Persistence.Repositories
             if (existing == null)
             {
                 _logger.LogError($"An entity with id: {id} doesn't exist in the database");
+                return;
                 //return NotFound
             }
 
@@ -50,6 +49,7 @@ namespace Infastructure.Persistence.Repositories
             if (!isExists)
             {
                 _logger.LogError($"The entity of type {typeof(TEntity)} with id: {entity.Id} doent's exist in the database");
+                return;
                 //return NotFound();
             }
 
