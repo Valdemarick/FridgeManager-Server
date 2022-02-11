@@ -1,9 +1,7 @@
 ﻿using Application.Common.Interfaces;
-using Application.Models.Fridge;
 using Application.Models.Product;
 using AutoMapper;
 using Domain.Entities;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -35,8 +33,8 @@ namespace Api.Controllers
             return Ok(productDtos);
         }
 
-        [Route("{id}")]
         [HttpGet]
+        [Route("{id}")]
         public async Task<IActionResult> GetProductById([FromRoute] Guid id)
         {
             var product = await _unitOfWork.Product.GetByIdAsync(id);
@@ -69,6 +67,49 @@ namespace Api.Controllers
             var productToReturn = _mapper.Map<ProductDto>(product);
 
             return CreatedAtRoute(nameof(GetProductById), new { id = productToReturn.Id }, productToReturn);
+        }
+
+        [HttpPut]
+        [Route("{id}")]
+        public async Task<IActionResult> UpdateProductById([FromRoute] Guid id, [FromBody] ProductForUpdateDto productForUpdateDto)
+        {
+            if (productForUpdateDto == null)
+            {
+                _logger.LogInfo("The object sent from client is null");
+                return BadRequest();
+            }
+
+            var product = await _unitOfWork.Product.GetByIdAsync(id);
+
+            if (product == null)
+            {
+                _logger.LogInfo($"A product with id: {id} doesn't exist in the database");
+                return NotFound();
+            }
+
+            _mapper.Map(productForUpdateDto, product);
+
+            await _unitOfWork.SaveAsync();
+
+            return NoContent();
+        }
+
+        [HttpDelete]
+        [Route("{id}")]
+        public async Task<IActionResult> DeleteProductById([FromRoute] Guid id)
+        {
+            var fridge = await _unitOfWork.Product.GetByIdAsync(id);
+
+            if (fridge == null)
+            {
+                _logger.LogInfo($"A product with id: {id} doesn't exist in the database");
+                return BadRequest();
+            }
+
+            await _unitOfWork.Product.DeleteAsync(fridge.Id);
+            await _unitOfWork.SaveAsync();
+
+            return NoContent();
         }
     }
 }
