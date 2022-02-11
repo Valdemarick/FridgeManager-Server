@@ -13,6 +13,8 @@ namespace Application.Common.Mappings
                 opt => opt.MapFrom(src => src.FridgeModel.Name))
                 .ForMember(dest => dest.ProductionYear,
                 opt => opt.MapFrom(src => src.FridgeModel.ProductionYear));
+
+            CreateMap<FridgeForCreationDto, Fridge>();
         }
     }
 }
