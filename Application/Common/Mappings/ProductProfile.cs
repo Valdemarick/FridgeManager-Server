@@ -14,7 +14,7 @@ namespace Application.Common.Mappings
 
             CreateMap<ProductForUpdateDto, Product>()
                 .ForMember(dest => dest.Quantity,
-                opt => opt.MapFrom(src => src.ProductQuantity));
+                opt => opt.MapFrom(src => src.ProductQuantity)).ReverseMap();
         }
     }
 }
