@@ -1,8 +1,6 @@
 ﻿namespace Application.Models.Product
 {
-    public class ProductForUpdateDto
+    public class ProductForUpdateDto : ProductForManipulation
     {
-        public string Name { get; set; }
-        public int ProductQuantity { get; set; }
     }
 }

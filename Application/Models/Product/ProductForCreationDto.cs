@@ -1,10 +1,6 @@
-﻿#nullable enable
-
-namespace Application.Models.Product
+﻿namespace Application.Models.Product
 {
-    public class ProductForCreationDto
+    public class ProductForCreationDto : ProductForManipulation
     {
-        public string Name { get; set; } = null!;
-        public int? Quantity { get; set; }
     }
 }
