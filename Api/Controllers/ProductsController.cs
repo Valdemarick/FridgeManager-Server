@@ -2,6 +2,7 @@
 using Application.Models.Product;
 using AutoMapper;
 using Domain.Entities;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -35,10 +36,10 @@ namespace Api.Controllers
 
         [HttpGet]
         [Route("{id}")]
+        [ActionName(nameof(GetProductById))]
         public async Task<IActionResult> GetProductById([FromRoute] Guid id)
         {
             var product = await _unitOfWork.Product.GetByIdAsync(id);
-
             if (product == null)
             {
                 _logger.LogInfo($"А product with id: {id} doesn't exist in the database");
@@ -55,7 +56,7 @@ namespace Api.Controllers
         {
             if (productDto == null)
             {
-                _logger.LogInfo($"The sent object is null");
+                _logger.LogError($"The sent object is null");
                 return BadRequest();
             }
 
@@ -66,7 +67,7 @@ namespace Api.Controllers
 
             var productToReturn = _mapper.Map<ProductDto>(product);
 
-            return CreatedAtRoute(nameof(GetProductById), new { id = productToReturn.Id }, productToReturn);
+            return CreatedAtAction(nameof(GetProductById), new { id = productToReturn.Id }, productToReturn);
         }
 
         [HttpPut]
@@ -75,12 +76,11 @@ namespace Api.Controllers
         {
             if (productForUpdateDto == null)
             {
-                _logger.LogInfo("The object sent from client is null");
+                _logger.LogError("The object sent from client is null");
                 return BadRequest();
             }
 
             var product = await _unitOfWork.Product.GetByIdAsync(id);
-
             if (product == null)
             {
                 _logger.LogInfo($"A product with id: {id} doesn't exist in the database");
@@ -88,7 +88,6 @@ namespace Api.Controllers
             }
 
             _mapper.Map(productForUpdateDto, product);
-
             await _unitOfWork.SaveAsync();
 
             return NoContent();
@@ -99,14 +98,42 @@ namespace Api.Controllers
         public async Task<IActionResult> DeleteProductById([FromRoute] Guid id)
         {
             var fridge = await _unitOfWork.Product.GetByIdAsync(id);
-
             if (fridge == null)
             {
-                _logger.LogInfo($"A product with id: {id} doesn't exist in the database");
+                _logger.LogError($"A product with id: {id} doesn't exist in the database");
                 return BadRequest();
             }
 
             await _unitOfWork.Product.DeleteAsync(fridge.Id);
+            await _unitOfWork.SaveAsync();
+
+            return NoContent();
+        }
+
+        [HttpPatch]
+        [Route("{id}")]
+        public async Task<IActionResult> UpdateProductPartiallyById([FromRoute] Guid id,
+                                                                    [FromBody] JsonPatchDocument<ProductForUpdateDto> patchDock)
+        {
+            if (patchDock == null)
+            {
+                _logger.LogError("The sent object is null");
+                return BadRequest();
+            }
+
+            var product = await _unitOfWork.Product.GetByIdAsync(id);
+            if (product == null)
+            {
+                _logger.LogInfo($"A product with id: {id} doesn't exist in the database");
+                return NotFound();
+            }
+
+            var productToPatch = _mapper.Map<ProductForUpdateDto>(product);
+
+            patchDock.ApplyTo(productToPatch);
+
+            _mapper.Map(productToPatch, product);
+
             await _unitOfWork.SaveAsync();
 
             return NoContent();
