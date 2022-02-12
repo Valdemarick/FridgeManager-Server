@@ -3,7 +3,6 @@ using Application.Models.Fridge;
 using Application.Models.FridgeProduct;
 using AutoMapper;
 using Domain.Entities;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -11,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Api.Controllers
 {
-    [Route("api/fridgesproducts")]
+    [Route("api/fridges-products")]
     [ApiController]
     public class FridgesProductsController : ControllerBase
     {
@@ -27,33 +26,31 @@ namespace Api.Controllers
         }
 
         [HttpGet]
-        [Route("{fridgeId}")]
+        [Route("fridge/{fridgeId}/products")]
         public async Task<IActionResult> GetProductsByFridgeId([FromRoute] Guid fridgeId)
         {
             var fridge = await _unitOfWork.Fridge.GetByIdAsync(fridgeId);
-
             if (fridge == null)
             {
-                _logger.LogInfo($"A fridge with id: {fridgeId} doesn't exist in the database");
+                _logger.LogError($"A fridge with id: {fridgeId} doesn't exist in the database");
                 return NotFound();
             }
 
             var products = await _unitOfWork.FridgeProduct.GetFridgeProductByFridgeIdAsync(fridgeId);
-
             var productDtos = _mapper.Map<List<FridgeProductDto>>(products);
 
             return Ok(productDtos);
         }
 
         [HttpGet]
-        [Route("{fridgeId}/product/{productId}")]
+        [Route("fridge/{fridgeId}/product/{productId}")]
+        [ActionName(nameof(GetFridgeProductbyIds))]
         public async Task<IActionResult> GetFridgeProductbyIds([FromRoute] Guid fridgeId, Guid productId)
         {
-            var fridgeProduct = await _unitOfWork.FridgeProduct.GetFridgeProdcutById(fridgeId, productId);
-
+            var fridgeProduct = await _unitOfWork.FridgeProduct.GetFridgeProductById(fridgeId, productId);
             if (fridgeProduct == null)
             {
-                _logger.LogInfo($"A cover doesn't exist in the database");
+                _logger.LogError($"A record doesn't exist in the database");
                 return NotFound();
             }
 
@@ -67,15 +64,20 @@ namespace Api.Controllers
         {
             if (fridgeProductDto == null)
             {
-                _logger.LogInfo($"The sent object is null");
+                _logger.LogError($"The sent object is null");
                 return BadRequest();
             }
 
-            var existing = await _unitOfWork.FridgeProduct.GetFridgeProdcutById(fridgeProductDto.FridgeId, fridgeProductDto.ProductId);
+            if (!ModelState.IsValid)
+            {
+                _logger.LogError("Invalid model state for 'FridgeProductForCreationDto' object");
+                return UnprocessableEntity(ModelState);
+            }
 
+            var existing = await _unitOfWork.FridgeProduct.GetFridgeProductById(fridgeProductDto.FridgeId, fridgeProductDto.ProductId);
             if (existing != null)
             {
-                _logger.LogInfo($"A cover already exist in the database");
+                _logger.LogError($"A record already exist in the database");
                 return BadRequest();
             }
 
@@ -85,18 +87,19 @@ namespace Api.Controllers
             await _unitOfWork.SaveAsync();
 
             var fridgeProductToReturn = _mapper.Map<FridgeProductDto>(fridgeProduct);
-            var route = $"{fridgeProductDto.FridgeId}/product/{fridgeProductToReturn.ProductId}";
-            //////////////////////////
-            return CreatedAtRoute(nameof(GetFridgeProductbyIds), new
-            { route }, fridgeProductDto);
+
+            return CreatedAtAction(nameof(GetFridgeProductbyIds), new
+            {
+                fridgeId = fridgeProductDto.FridgeId,
+                productId = fridgeProductToReturn.ProductId
+            }, fridgeProductToReturn);
         }
 
         [HttpDelete]
-        [Route("{fridgeId}/product/{productId}")]
+        [Route("fridge/{fridgeId}/product/{productId}")]
         public async Task<IActionResult> DeleteFridgeProductByIds([FromRoute] Guid fridgeId, [FromRoute] Guid productId)
         {
-            var fridgeProduct = await _unitOfWork.FridgeProduct.GetFridgeProdcutById(fridgeId, productId);
-
+            var fridgeProduct = await _unitOfWork.FridgeProduct.GetFridgeProductById(fridgeId, productId);
             if (fridgeProduct == null)
             {
                 _logger.LogInfo($"");
