@@ -1,12 +1,6 @@
-﻿#nullable enable
-
-using System;
-
-namespace Application.Models.Fridge
+﻿namespace Application.Models.Fridge
 {
-    public class FridgeForCreationDto
+    public class FridgeForCreationDto : FridgeForManipulation
     {
-        public string? OwnerName { get; set; }
-        public Guid ModelId { get; set; }
     }
 }
