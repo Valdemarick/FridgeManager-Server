@@ -60,6 +60,12 @@ namespace Api.Controllers
                 return BadRequest();
             }
 
+            if (!ModelState.IsValid)
+            {
+                _logger.LogError($"Invalid model state for 'ProductForUpdate' object");
+                return UnprocessableEntity(ModelState);
+            }
+
             var product = _mapper.Map<Product>(productDto);
 
             await _unitOfWork.Product.CreateAsync(product);
@@ -72,12 +78,18 @@ namespace Api.Controllers
 
         [HttpPut]
         [Route("{id}")]
-        public async Task<IActionResult> UpdateProductById([FromRoute] Guid id, [FromBody] ProductForUpdateDto productForUpdateDto)
+        public async Task<IActionResult> UpdateProductFullyById([FromRoute] Guid id, [FromBody] ProductForUpdateDto productForUpdateDto)
         {
             if (productForUpdateDto == null)
             {
                 _logger.LogError("The object sent from client is null");
                 return BadRequest();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                _logger.LogError("Invalid model state for 'ProductForUpdate' object");
+                return UnprocessableEntity(ModelState);
             }
 
             var product = await _unitOfWork.Product.GetByIdAsync(id);
@@ -131,6 +143,14 @@ namespace Api.Controllers
             var productToPatch = _mapper.Map<ProductForUpdateDto>(product);
 
             patchDock.ApplyTo(productToPatch);
+
+            TryValidateModel(productToPatch);
+
+            if (!ModelState.IsValid)
+            {
+                _logger.LogError("Invalid model state for 'JsonPatchDocument<ProductForUpdateDto>' object");
+                return UnprocessableEntity(ModelState);
+            }
 
             _mapper.Map(productToPatch, product);
 
