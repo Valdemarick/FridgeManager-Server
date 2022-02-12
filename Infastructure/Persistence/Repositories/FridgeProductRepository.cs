@@ -20,7 +20,7 @@ namespace Infastructure.Persistence.Repositories
             .AsNoTracking()
             .ToListAsync();
 
-        public async Task<FridgeProduct> GetFridgeProdcutById(Guid fridgeId, Guid productId) =>
+        public async Task<FridgeProduct> GetFridgeProductById(Guid fridgeId, Guid productId) =>
             await _appContext.Set<FridgeProduct>()
             .Where(fp => fp.FridgeId.Equals(fridgeId) && fp.ProductId.Equals(productId))
             .Include(fp => fp.Product)
