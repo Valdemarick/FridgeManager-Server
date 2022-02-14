@@ -9,10 +9,10 @@ namespace Infastructure.Persistence.Repositories
 {
     public class ProductRepository : GenericRepository<Product>, IProductRepository
     {
-        public ProductRepository(ApplicationContext context, ILoggerManager logger) : base(context, logger) { }
+        public ProductRepository(IApplicationDbContext context, ILoggerManager logger) : base(context, logger) { }
 
         public override async Task<IEnumerable<Product>> GetAllAsync() => 
-            await _appContext.Set<Product>()
+            await appContext.Set<Product>()
             .AsNoTracking()
             .ToListAsync();
     }

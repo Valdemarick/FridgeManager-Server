@@ -11,17 +11,17 @@ namespace Infastructure.Persistence.Repositories
 {
     public class FridgeProductRepository : GenericRepository<FridgeProduct>, IFridgeProductRepository
     {
-        public FridgeProductRepository(ApplicationContext context, ILoggerManager logger) : base(context, logger) { }
+        public FridgeProductRepository(IApplicationDbContext context, ILoggerManager logger) : base(context, logger) { }
 
         public async Task<IEnumerable<FridgeProduct>> GetFridgeProductByFridgeIdAsync(Guid fridgeId) =>
-            await _appContext.Set<FridgeProduct>()
+            await appContext.Set<FridgeProduct>()
             .Where(fp => fp.FridgeId.Equals(fridgeId))
             .Include(fp => fp.Product)
             .AsNoTracking()
             .ToListAsync();
 
         public async Task<FridgeProduct> GetFridgeProductById(Guid fridgeId, Guid productId) =>
-            await _appContext.Set<FridgeProduct>()
+            await appContext.Set<FridgeProduct>()
             .Where(fp => fp.FridgeId.Equals(fridgeId) && fp.ProductId.Equals(productId))
             .Include(fp => fp.Product)
             .AsNoTracking() 
@@ -29,16 +29,16 @@ namespace Infastructure.Persistence.Repositories
 
         public async Task DeleteByCompositeKey(Guid fridgeId, Guid productId)
         {
-            var existing = await _appContext.Set<FridgeProduct>().FindAsync(fridgeId, productId);
+            var existing = await appContext.Set<FridgeProduct>().FindAsync(fridgeId, productId);
 
             if (existing == null)
             {
-                _logger.LogInfo($"The cover doesn't exist in the database");
+                logger.LogInfo($"The cover doesn't exist in the database");
                 return;
                 //return NotFound();
             }
 
-            _appContext.Set<FridgeProduct>().Remove(existing);
+            appContext.Set<FridgeProduct>().Remove(existing);
         }
     }
 }

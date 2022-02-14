@@ -7,6 +7,6 @@ namespace Infastructure.Persistence.Repositories
 {
     public class FridgeModelRepository : GenericRepository<FridgeModel>, IFridgeModelRepository
     {
-        public FridgeModelRepository(ApplicationContext context, ILoggerManager logger) : base(context, logger) { }
+        public FridgeModelRepository(IApplicationDbContext context, ILoggerManager logger) : base(context, logger) { }
     }
 }

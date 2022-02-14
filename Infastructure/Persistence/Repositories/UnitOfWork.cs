@@ -6,14 +6,15 @@ namespace Infastructure.Persistence.Repositories
 {
     public class UnitOfWork : IUnitOfWork
     {
-        private ApplicationContext _appContext;
+        private readonly IApplicationDbContext _appContext;
         private readonly ILoggerManager _logger;
+
         private IFridgeRepository _fridgeRepository;
         private IProductRepository _productRepository;
         private IFridgeModelRepository _modelRepository;
         private IFridgeProductRepository _fridgeProductRepository;
 
-        public UnitOfWork(ApplicationContext applicationContext, ILoggerManager logger)
+        public UnitOfWork(IApplicationDbContext applicationContext, ILoggerManager logger)
         {
             _appContext = applicationContext; 
             _logger = logger;
