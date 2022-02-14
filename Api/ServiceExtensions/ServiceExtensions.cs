@@ -34,5 +34,8 @@ namespace Api.ServiceExtensions
 
         public static void ConfigureRepositoryManager(this IServiceCollection services) =>
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+        public static void ConfigureApplicationContext(this IServiceCollection services) =>
+            services.AddScoped<IApplicationDbContext, ApplicationContext>();
     }
 }
