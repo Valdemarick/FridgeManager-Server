@@ -34,6 +34,7 @@ namespace Api
             services.ConfigureLoggerService();
             services.ConfigureSqlContext(Configuration);
             services.ConfigureRepositoryManager();
+            services.ConfigureApplicationContext();
             services.AddAutoMapper(typeof(FridgeProfile), typeof(ProductProfile), typeof(FridgeProductProfile));
             services.AddControllers().AddNewtonsoftJson();
             //.AddJsonOptions(x =>
