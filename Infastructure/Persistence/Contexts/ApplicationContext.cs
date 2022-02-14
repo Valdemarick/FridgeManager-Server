@@ -2,10 +2,11 @@
 using Domain.Entities;
 using Infastructure.Persistence.Configurations;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace Infastructure.Persistence.Contexts
 {
-    public class ApplicationContext : DbContext
+    public class ApplicationContext : DbContext, IApplicationDbContext
     {
         public DbSet<Fridge> Fridges { get; set; }
         public DbSet<FridgeModel> FridgeModels { get; set; }
@@ -20,6 +21,11 @@ namespace Infastructure.Persistence.Contexts
             modelBuilder.ApplyConfiguration(new FridgeModelConfiguration());
             modelBuilder.ApplyConfiguration(new FridgeConfiguration());
             modelBuilder.ApplyConfiguration(new FridgeProductConfiguration());
+        }
+
+        public async Task<int> SaveChangesAsync()
+        {
+            return await base.SaveChangesAsync();
         }
     }
 }
