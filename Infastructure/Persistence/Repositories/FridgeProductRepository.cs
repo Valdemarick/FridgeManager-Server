@@ -20,14 +20,14 @@ namespace Infastructure.Persistence.Repositories
             .AsNoTracking()
             .ToListAsync();
 
-        public async Task<FridgeProduct> GetFridgeProductById(Guid fridgeId, Guid productId) =>
+        public async Task<FridgeProduct> GetFridgeProductByIdsAsync(Guid fridgeId, Guid productId) =>
             await appContext.Set<FridgeProduct>()
             .Where(fp => fp.FridgeId.Equals(fridgeId) && fp.ProductId.Equals(productId))
             .Include(fp => fp.Product)
             .AsNoTracking() 
             .SingleOrDefaultAsync();
 
-        public async Task DeleteByCompositeKey(Guid fridgeId, Guid productId)
+        public async Task DeleteByIdsAsync(Guid fridgeId, Guid productId)
         {
             var existing = await appContext.Set<FridgeProduct>().FindAsync(fridgeId, productId);
 

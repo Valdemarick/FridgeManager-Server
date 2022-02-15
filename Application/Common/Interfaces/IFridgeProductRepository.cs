@@ -8,7 +8,7 @@ namespace Application.Common.Interfaces
     public interface IFridgeProductRepository : IGenericRepository<FridgeProduct>
     {
         Task<IEnumerable<FridgeProduct>> GetFridgeProductByFridgeIdAsync(Guid fridgeId);
-        Task<FridgeProduct> GetFridgeProductById(Guid fridgeId, Guid productId);
-        Task DeleteByCompositeKey(Guid fridgeId, Guid productId);
+        Task<FridgeProduct> GetFridgeProductByIdsAsync(Guid fridgeId, Guid productId);
+        Task DeleteByIdsAsync(Guid fridgeId, Guid productId);
     }
 }
