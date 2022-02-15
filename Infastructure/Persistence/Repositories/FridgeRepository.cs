@@ -22,6 +22,11 @@ namespace Infastructure.Persistence.Repositories
         public override async Task<Fridge> GetByIdAsync(Guid id) =>
             await appContext.Set<Fridge>()
             .Include(f => f.FridgeModel)
+            .SingleOrDefaultAsync(f => f.Id.Equals(id));
+
+        public override async Task<Fridge> GetByIdReadOnlyAsync(Guid id) =>
+             await appContext.Set<Fridge>()
+            .Include(f => f.FridgeModel)
             .AsNoTracking()
             .SingleOrDefaultAsync(f => f.Id.Equals(id));
     }

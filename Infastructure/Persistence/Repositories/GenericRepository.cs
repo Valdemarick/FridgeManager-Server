@@ -20,7 +20,8 @@ namespace Infastructure.Persistence.Repositories
         }
 
         public virtual async Task CreateAsync(TEntity entity) =>
-            await appContext.Set<TEntity>().AddAsync(entity);
+            await appContext.Set<TEntity>()
+            .AddAsync(entity);
 
         public virtual async Task DeleteAsync(Guid id)
         {
@@ -39,7 +40,13 @@ namespace Infastructure.Persistence.Repositories
             await appContext.Set<TEntity>().ToListAsync();
 
         public virtual async Task<TEntity> GetByIdAsync(Guid id) =>
-            await appContext.Set<TEntity>().FindAsync(id);
+            await appContext.Set<TEntity>()
+            .FindAsync(id);
+
+        public virtual async Task<TEntity> GetByIdReadOnlyAsync(Guid id) =>
+            await appContext.Set<TEntity>()
+            .AsNoTracking()
+            .SingleOrDefaultAsync();
 
         public virtual async Task UpdateAsync(TEntity entity)
         {
