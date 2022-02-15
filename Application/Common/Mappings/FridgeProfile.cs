@@ -20,7 +20,9 @@ namespace Application.Common.Mappings
 
             CreateMap<FridgeForUpdateDto, Fridge>()
                 .ForMember(dest => dest.FridgeModelId,
-                opt => opt.MapFrom(src => src.ModelId)).ReverseMap();
+                opt => opt.MapFrom(src => src.ModelId))
+                .ForMember(dest => dest.OwnerName,
+                opt => opt.MapFrom(src => src.OwnerName)).ReverseMap();
         }
     }
 }
