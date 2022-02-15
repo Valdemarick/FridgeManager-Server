@@ -14,6 +14,8 @@ namespace Infastructure.Persistence.Configurations
             builder.HasCheckConstraint("ProductionYear", "ProductionYear >= 1899 AND ProductionYear <= 2022");
 
             builder.Property(pt => pt.Name).HasMaxLength(30).IsRequired();
+
+            builder.HasIndex(pt => pt.Name).IsUnique();
         }
     }
 }

@@ -33,6 +33,8 @@ namespace Infastructure.Persistence.Configurations
             builder.Property(pt => pt.Quantity).HasDefaultValue(1);
 
             builder.Property(pt => pt.Name).HasMaxLength(30);
+
+            builder.HasIndex(pt => pt.Name).IsUnique();
         }
     }
 }
