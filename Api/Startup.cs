@@ -35,6 +35,7 @@ namespace Api
             services.ConfigureApplicationContext();
             services.AddAuthentication();
             services.ConfigureIdentity();
+            services.ConfigureJWT(Configuration);
             services.AddAutoMapper(typeof(FridgeProfile), typeof(ProductProfile), typeof(FridgeProductProfile));
             services.AddControllers().AddNewtonsoftJson();
             //.AddJsonOptions(x =>
