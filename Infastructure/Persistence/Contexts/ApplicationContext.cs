@@ -1,12 +1,14 @@
 ﻿using Application.Common.Interfaces;
+using Application.Models.User;
 using Domain.Entities;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Infastructure.Persistence.Contexts
 {
-    public class ApplicationContext : DbContext, IApplicationDbContext
+    public class ApplicationContext : IdentityDbContext<User>, IApplicationDbContext
     {
         public DbSet<Fridge> Fridges { get; set; }
         public DbSet<FridgeModel> FridgeModels { get; set; }
@@ -20,6 +22,8 @@ namespace Infastructure.Persistence.Contexts
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder); //for correct migration work
+
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         }
     }
