@@ -1,7 +1,7 @@
 ﻿using Application.Common.Interfaces;
 using Domain.Entities;
-using Infastructure.Persistence.Configurations;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Infastructure.Persistence.Contexts
@@ -15,17 +15,12 @@ namespace Infastructure.Persistence.Contexts
 
         public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options) { }
 
+        public async Task<int> SaveChangesAsync() =>
+            await base.SaveChangesAsync();
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfiguration(new ProductConfiguration());
-            modelBuilder.ApplyConfiguration(new FridgeModelConfiguration());
-            modelBuilder.ApplyConfiguration(new FridgeConfiguration());
-            modelBuilder.ApplyConfiguration(new FridgeProductConfiguration());
-        }
-
-        public async Task<int> SaveChangesAsync()
-        {
-            return await base.SaveChangesAsync();
+            modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         }
     }
 }
