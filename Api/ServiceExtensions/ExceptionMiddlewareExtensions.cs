@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using System.IO;
 using System.Net;
-
+using System.Text.Json;
 namespace Api.ServiceExtensions
 {
     public static class ExceptionMiddlewareExtensions
@@ -23,12 +23,14 @@ namespace Api.ServiceExtensions
                     if (contextFeature != null)
                     {
                         logger.LogError($"Something went wrong: {contextFeature.Error}");
-                        await context.Response.WriteAsync(new ErrorDetails()
+
+                        var error = new ErrorDetails()
                         {
                             StatusCode = context.Response.StatusCode,
-                            Message = "Internal Server Error."
+                            Message = "Internal Server Error"
+                        };
 
-                        }.ToString());
+                        await context.Response.WriteAsync(JsonSerializer.Serialize(error));
                     }
                 });
             });
