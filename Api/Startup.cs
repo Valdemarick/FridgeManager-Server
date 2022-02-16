@@ -11,7 +11,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using NLog;
 using System.IO;
-using System.Text.Json.Serialization;
 
 namespace Api
 {
@@ -19,8 +18,7 @@ namespace Api
     {
         public Startup(IConfiguration configuration)
         {
-            LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(),
-            "/nlog.config"));
+            LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/nlog.config"));
             Configuration = configuration;
         }
 
@@ -35,6 +33,8 @@ namespace Api
             services.ConfigureSqlContext(Configuration);
             services.ConfigureRepositoryManager();
             services.ConfigureApplicationContext();
+            services.AddAuthentication();
+            services.ConfigureIdentity();
             services.AddAutoMapper(typeof(FridgeProfile), typeof(ProductProfile), typeof(FridgeProductProfile));
             services.AddControllers().AddNewtonsoftJson();
             //.AddJsonOptions(x =>
@@ -76,6 +76,7 @@ namespace Api
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

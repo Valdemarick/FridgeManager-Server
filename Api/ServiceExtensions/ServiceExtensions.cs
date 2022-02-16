@@ -1,8 +1,10 @@
 ﻿using Application.Common.Interfaces;
+using Application.Models.User;
 using Infastructure.Persistence.Contexts;
 using Infastructure.Persistence.Repositories;
 using Infastructure.Services;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,5 +39,20 @@ namespace Api.ServiceExtensions
 
         public static void ConfigureApplicationContext(this IServiceCollection services) =>
             services.AddScoped<IApplicationDbContext, ApplicationContext>();
+
+        public static void ConfigureIdentity(this IServiceCollection services)
+        {
+            var builder = services.AddIdentityCore<User>(o =>
+            {
+                o.Password.RequireDigit = true;
+                o.Password.RequireLowercase = false;
+                o.Password.RequireUppercase = false;
+                o.Password.RequireNonAlphanumeric = false;
+                o.Password.RequiredLength = 8;
+                o.User.RequireUniqueEmail = true;
+            });
+            builder = new IdentityBuilder(builder.UserType, typeof(IdentityRole), builder.Services);
+            builder.AddEntityFrameworkStores<ApplicationContext>().AddDefaultTokenProviders();
+        }
     }
 }
