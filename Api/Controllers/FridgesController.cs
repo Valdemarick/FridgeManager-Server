@@ -35,12 +35,11 @@ namespace Api.Controllers
             return Ok(fridgeDtos);
         }
 
-        [HttpGet]
-        [Route("{id}")]
+        [HttpGet("{id}")]
         [ActionName(nameof(GetFridgeById))]
         public async Task<IActionResult> GetFridgeById([FromRoute] Guid id)
         {
-            var fridge = await _unitOfWork.Fridge.GetByIdAsync(id);
+            var fridge = await _unitOfWork.Fridge.GetByIdReadOnlyAsync(id);
 
             if (fridge == null)
             {
@@ -58,7 +57,7 @@ namespace Api.Controllers
         {
             if (!ModelState.IsValid)
             {
-                _logger.LogError("Invalid model state for 'FridgeForCreation' object");
+                _logger.LogWarn("Invalid model state for 'FridgeForCreation' object");
                 return UnprocessableEntity(ModelState);
             }
 
@@ -72,11 +71,10 @@ namespace Api.Controllers
             return CreatedAtAction(nameof(GetFridgeById), new { fridgeToReturn.Id }, fridgeToReturn);
         }
 
-        [HttpDelete]
-        [Route("{id}")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteFridgeById([FromRoute] Guid id)
         {
-            var fridge = await _unitOfWork.Fridge.GetByIdAsync(id);
+            var fridge = await _unitOfWork.Fridge.GetByIdReadOnlyAsync(id);
 
             if (fridge == null)
             {
@@ -90,13 +88,12 @@ namespace Api.Controllers
             return NoContent();
         }
 
-        [HttpPut]
-        [Route("{id}")]
+        [HttpPut("{id}")]
         public async Task<IActionResult> UpdateFridgeFullyById([FromRoute] Guid id ,[FromBody] FridgeForUpdateDto fridgeForUpdateDto)
         {
             if (!ModelState.IsValid)
             {
-                _logger.LogError("Invalid model state for 'FridgeForCreationDto' object");
+                _logger.LogWarn("Invalid model state for 'FridgeForCreationDto' object");
                 return UnprocessableEntity(ModelState);
             }
 
@@ -114,8 +111,7 @@ namespace Api.Controllers
             return NoContent();
         }
 
-        [HttpPatch]
-        [Route("{id}")]
+        [HttpPatch("{id}")]
         public async Task<IActionResult> UpdateFridgePartiallyById([FromRoute] Guid id,
                                                                    [FromBody] JsonPatchDocument<FridgeForUpdateDto> patchDock)
         {
@@ -128,7 +124,7 @@ namespace Api.Controllers
             var fridge = await _unitOfWork.Fridge.GetByIdAsync(id);
             if (fridge == null)
             {
-                _logger.LogInfo($"A fridge with id: {id} doesn't exist in the database");
+                _logger.LogWarn($"A fridge with id: {id} doesn't exist in the database");
                 return NotFound();
             }
 

@@ -25,11 +25,10 @@ namespace Api.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet]
-        [Route("fridge/{fridgeId}/products")]
+        [HttpGet("fridge/{fridgeId}/products")]
         public async Task<IActionResult> GetProductsByFridgeId([FromRoute] Guid fridgeId)
         {
-            var fridge = await _unitOfWork.Fridge.GetByIdAsync(fridgeId);
+            var fridge = await _unitOfWork.Fridge.GetByIdReadOnlyAsync(fridgeId);
             if (fridge == null)
             {
                 _logger.LogError($"A fridge with id: {fridgeId} doesn't exist in the database");
@@ -42,19 +41,18 @@ namespace Api.Controllers
             return Ok(productDtos);
         }
 
-        [HttpGet]
-        [Route("fridge/{fridgeId}/product/{productId}")]
+        [HttpGet("fridge/{fridgeId}/product/{productId}")]
         [ActionName(nameof(GetFridgeProductbyIds))]
         public async Task<IActionResult> GetFridgeProductbyIds([FromRoute] Guid fridgeId, Guid productId)
         {
-            var fridgeProduct = await _unitOfWork.FridgeProduct.GetFridgeProductById(fridgeId, productId);
-            if (fridgeProduct == null)
+            var fridgeProducts = await _unitOfWork.FridgeProduct.GetFridgeProductByIdsAsync(fridgeId, productId);
+            if (fridgeProducts == null)
             {
                 _logger.LogError($"A record doesn't exist in the database");
                 return NotFound();
             }
 
-            var fridgeProductDto = _mapper.Map<FridgeProductDto>(fridgeProduct);
+            var fridgeProductDto = _mapper.Map<FridgeProductDto>(fridgeProducts);
 
             return Ok(fridgeProductDto);
         }
@@ -74,7 +72,7 @@ namespace Api.Controllers
                 return UnprocessableEntity(ModelState);
             }
 
-            var existing = await _unitOfWork.FridgeProduct.GetFridgeProductById(fridgeProductDto.FridgeId, fridgeProductDto.ProductId);
+            var existing = await _unitOfWork.FridgeProduct.GetFridgeProductByIdsAsync(fridgeProductDto.FridgeId, fridgeProductDto.ProductId);
             if (existing != null)
             {
                 _logger.LogError($"A record already exist in the database");
@@ -95,18 +93,17 @@ namespace Api.Controllers
             }, fridgeProductToReturn);
         }
 
-        [HttpDelete]
-        [Route("fridge/{fridgeId}/product/{productId}")]
+        [HttpDelete("fridge/{fridgeId}/product/{productId}")]
         public async Task<IActionResult> DeleteFridgeProductByIds([FromRoute] Guid fridgeId, [FromRoute] Guid productId)
         {
-            var fridgeProduct = await _unitOfWork.FridgeProduct.GetFridgeProductById(fridgeId, productId);
+            var fridgeProduct = await _unitOfWork.FridgeProduct.GetFridgeProductByIdsAsync(fridgeId, productId);
             if (fridgeProduct == null)
             {
                 _logger.LogInfo($"");
                 return NotFound();
             }
 
-            await _unitOfWork.FridgeProduct.DeleteByCompositeKey(fridgeId, productId);
+            await _unitOfWork.FridgeProduct.DeleteByIdsAsync(fridgeId, productId);
             await _unitOfWork.SaveAsync();
 
             return NoContent();

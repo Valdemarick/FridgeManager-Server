@@ -34,12 +34,11 @@ namespace Api.Controllers
             return Ok(productDtos);
         }
 
-        [HttpGet]
-        [Route("{id}")]
+        [HttpGet("{id}")]
         [ActionName(nameof(GetProductById))]
         public async Task<IActionResult> GetProductById([FromRoute] Guid id)
         {
-            var product = await _unitOfWork.Product.GetByIdAsync(id);
+            var product = await _unitOfWork.Product.GetByIdReadOnlyAsync(id);
             if (product == null)
             {
                 _logger.LogInfo($"А product with id: {id} doesn't exist in the database");
@@ -76,8 +75,7 @@ namespace Api.Controllers
             return CreatedAtAction(nameof(GetProductById), new { id = productToReturn.Id }, productToReturn);
         }
 
-        [HttpPut]
-        [Route("{id}")]
+        [HttpPut("{id}")]
         public async Task<IActionResult> UpdateProductFullyById([FromRoute] Guid id, [FromBody] ProductForUpdateDto productForUpdateDto)
         {
             if (productForUpdateDto == null)
@@ -88,7 +86,7 @@ namespace Api.Controllers
 
             if (!ModelState.IsValid)
             {
-                _logger.LogError("Invalid model state for 'ProductForUpdate' object");
+                _logger.LogWarn("Invalid model state for 'ProductForUpdate' object");
                 return UnprocessableEntity(ModelState);
             }
 
@@ -105,11 +103,10 @@ namespace Api.Controllers
             return NoContent();
         }
 
-        [HttpDelete]
-        [Route("{id}")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProductById([FromRoute] Guid id)
         {
-            var fridge = await _unitOfWork.Product.GetByIdAsync(id);
+            var fridge = await _unitOfWork.Product.GetByIdReadOnlyAsync(id);
             if (fridge == null)
             {
                 _logger.LogError($"A product with id: {id} doesn't exist in the database");
@@ -122,8 +119,7 @@ namespace Api.Controllers
             return NoContent();
         }
 
-        [HttpPatch]
-        [Route("{id}")]
+        [HttpPatch("{id}")]
         public async Task<IActionResult> UpdateProductPartiallyById([FromRoute] Guid id,
                                                                     [FromBody] JsonPatchDocument<ProductForUpdateDto> patchDock)
         {
@@ -148,7 +144,7 @@ namespace Api.Controllers
 
             if (!ModelState.IsValid)
             {
-                _logger.LogError("Invalid model state for 'JsonPatchDocument<ProductForUpdateDto>' object");
+                _logger.LogWarn("Invalid model state for 'JsonPatchDocument<ProductForUpdateDto>' object");
                 return UnprocessableEntity(ModelState);
             }
 
