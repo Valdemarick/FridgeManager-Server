@@ -82,5 +82,8 @@ namespace Api.ServiceExtensions
                 };
             });
         }
+
+        public static void ConfigureAuthenticationManager(this IServiceCollection services) =>
+            services.AddScoped<IAuthenticationManager, AuthenticationManager>();
     }
 }
