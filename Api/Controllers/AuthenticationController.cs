@@ -15,15 +15,15 @@ namespace Api.Controllers
         private readonly ILoggerManager _logger;
         private readonly IMapper _mapper;
         private readonly UserManager<User> _userManager;
-        //private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IAuthenticationManager _authenticationManager;
 
-        public AuthenticationController(ILoggerManager logger, IMapper mapper, 
-                                        UserManager<User> userManager /*RoleManager<IdentityRole> roleManager*/)
+        public AuthenticationController(ILoggerManager logger, IMapper mapper, UserManager<User> userManager,
+            IAuthenticationManager authenticationManager)
         {
             _logger = logger;
             _mapper = mapper;
             _userManager = userManager;
-            //_roleManager = roleManager;
+            _authenticationManager = authenticationManager;
         }
 
         [HttpPost]
@@ -52,18 +52,33 @@ namespace Api.Controllers
                 return BadRequest(ModelState);
             }
 
-            //foreach(var role in userForRegistrationDto.Roles)
-            //{
-            //    if (!await _roleManager.RoleExistsAsync(role))
-            //    {
-            //        _logger.LogInfo($"Role {role} doesn't exist in the database");
-            //        return NotFound();
-            //    }
-            //}
-
             await _userManager.AddToRolesAsync(user, userForRegistrationDto.Roles);
 
             return StatusCode(201);
+        }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Authenticate([FromBody] UserForAuthenticationDto userForAuthenticationDto)
+        {
+            if (userForAuthenticationDto == null)
+            {
+                _logger.LogError("The sent object is null");
+                return BadRequest();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                _logger.LogWarn("Invalid model state for 'UserForAuthenticationDto' object");
+                return UnprocessableEntity(ModelState);
+            }
+
+            if (!await _authenticationManager.ValidateUser(userForAuthenticationDto))
+            {
+                _logger.LogWarn($"{nameof(Authenticate)}: Authentication failed. Something wrong");
+                return Unauthorized();
+            }
+
+            return Ok(new { Token = await _authenticationManager.CreateToken() });
         }
     }
 }
