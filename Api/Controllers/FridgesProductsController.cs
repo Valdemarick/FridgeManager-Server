@@ -3,6 +3,7 @@ using Application.Models.Fridge;
 using Application.Models.FridgeProduct;
 using AutoMapper;
 using Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -25,7 +26,7 @@ namespace Api.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet("fridge/{fridgeId}/products")]
+        [HttpGet("fridge/{fridgeId}/products"), Authorize]
         public async Task<IActionResult> GetProductsByFridgeId([FromRoute] Guid fridgeId)
         {
             var fridge = await _unitOfWork.Fridge.GetByIdReadOnlyAsync(fridgeId);
@@ -41,7 +42,7 @@ namespace Api.Controllers
             return Ok(productDtos);
         }
 
-        [HttpGet("fridge/{fridgeId}/product/{productId}")]
+        [HttpGet("fridge/{fridgeId}/product/{productId}"), Authorize]
         [ActionName(nameof(GetFridgeProductbyIds))]
         public async Task<IActionResult> GetFridgeProductbyIds([FromRoute] Guid fridgeId, Guid productId)
         {
@@ -57,7 +58,7 @@ namespace Api.Controllers
             return Ok(fridgeProductDto);
         }
 
-        [HttpPost]
+        [HttpPost, Authorize]
         public async Task<IActionResult> AddExistProductIntoFridge([FromBody] FridgeProductForCreationDto fridgeProductDto)
         {
             if (fridgeProductDto == null)
@@ -93,7 +94,7 @@ namespace Api.Controllers
             }, fridgeProductToReturn);
         }
 
-        [HttpDelete("fridge/{fridgeId}/product/{productId}")]
+        [HttpDelete("fridge/{fridgeId}/product/{productId}"), Authorize(Roles = "Administrator")]
         public async Task<IActionResult> DeleteFridgeProductByIds([FromRoute] Guid fridgeId, [FromRoute] Guid productId)
         {
             var fridgeProduct = await _unitOfWork.FridgeProduct.GetFridgeProductByIdsAsync(fridgeId, productId);

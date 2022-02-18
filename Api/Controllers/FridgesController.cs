@@ -2,6 +2,7 @@
 using Application.Models.Fridge;
 using AutoMapper;
 using Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -25,7 +26,7 @@ namespace Api.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet]
+        [HttpGet, Authorize]
         public async Task<IActionResult> GetFridges()
         {
             var fridges = await _unitOfWork.Fridge.GetAllAsync();
@@ -35,7 +36,7 @@ namespace Api.Controllers
             return Ok(fridgeDtos);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}"), Authorize]
         [ActionName(nameof(GetFridgeById))]
         public async Task<IActionResult> GetFridgeById([FromRoute] Guid id)
         {
@@ -52,7 +53,7 @@ namespace Api.Controllers
             return Ok(fridgeDto);
         }
 
-        [HttpPost]
+        [HttpPost, Authorize]
         public async Task<IActionResult> CreateFridge([FromBody] FridgeForCreationDto fridgeForCreationDto)
         {
             if (!ModelState.IsValid)
@@ -71,7 +72,7 @@ namespace Api.Controllers
             return CreatedAtAction(nameof(GetFridgeById), new { fridgeToReturn.Id }, fridgeToReturn);
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}"), Authorize(Roles = "Administrator")]
         public async Task<IActionResult> DeleteFridgeById([FromRoute] Guid id)
         {
             var fridge = await _unitOfWork.Fridge.GetByIdReadOnlyAsync(id);
@@ -88,7 +89,7 @@ namespace Api.Controllers
             return NoContent();
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id}"), Authorize(Roles = "Administrator")]
         public async Task<IActionResult> UpdateFridgeFullyById([FromRoute] Guid id ,[FromBody] FridgeForUpdateDto fridgeForUpdateDto)
         {
             if (!ModelState.IsValid)
@@ -111,7 +112,7 @@ namespace Api.Controllers
             return NoContent();
         }
 
-        [HttpPatch("{id}")]
+        [HttpPatch("{id}"), Authorize(Roles = "Administrator")]
         public async Task<IActionResult> UpdateFridgePartiallyById([FromRoute] Guid id,
                                                                    [FromBody] JsonPatchDocument<FridgeForUpdateDto> patchDock)
         {

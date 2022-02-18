@@ -2,6 +2,7 @@
 using Application.Models.Product;
 using AutoMapper;
 using Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -34,7 +35,7 @@ namespace Api.Controllers
             return Ok(productDtos);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}"), Authorize]
         [ActionName(nameof(GetProductById))]
         public async Task<IActionResult> GetProductById([FromRoute] Guid id)
         {
@@ -50,7 +51,7 @@ namespace Api.Controllers
             return Ok(productDto);
         }
 
-        [HttpPost]
+        [HttpPost, Authorize]
         public async Task<IActionResult> CreateProduct([FromBody] ProductForCreationDto productDto)
         {
             if (productDto == null)
@@ -75,7 +76,7 @@ namespace Api.Controllers
             return CreatedAtAction(nameof(GetProductById), new { id = productToReturn.Id }, productToReturn);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id}"), Authorize(Roles = "Administrator")]
         public async Task<IActionResult> UpdateProductFullyById([FromRoute] Guid id, [FromBody] ProductForUpdateDto productForUpdateDto)
         {
             if (productForUpdateDto == null)
@@ -103,7 +104,7 @@ namespace Api.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}"), Authorize(Roles = "Administrator")]
         public async Task<IActionResult> DeleteProductById([FromRoute] Guid id)
         {
             var fridge = await _unitOfWork.Product.GetByIdReadOnlyAsync(id);
@@ -119,7 +120,7 @@ namespace Api.Controllers
             return NoContent();
         }
 
-        [HttpPatch("{id}")]
+        [HttpPatch("{id}"), Authorize(Roles = "Administrator")]
         public async Task<IActionResult> UpdateProductPartiallyById([FromRoute] Guid id,
                                                                     [FromBody] JsonPatchDocument<ProductForUpdateDto> patchDock)
         {
