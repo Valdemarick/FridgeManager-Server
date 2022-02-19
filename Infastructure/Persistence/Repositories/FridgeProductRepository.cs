@@ -6,6 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.Data.SqlClient;
 
 namespace Infastructure.Persistence.Repositories
 {
@@ -39,6 +41,37 @@ namespace Infastructure.Persistence.Repositories
             }
 
             appContext.Set<FridgeProduct>().Remove(existing);
+        }
+
+        public async Task<IEnumerable<FridgeProduct>> FindRecordWhereProductQuantityAreZero()
+        {
+            var parameteres = new SqlParameter[]
+            {
+                new SqlParameter
+                {
+                    ParameterName = "FridgeId",
+                    SqlDbType = System.Data.SqlDbType.UniqueIdentifier,
+                    Direction = System.Data.ParameterDirection.Output
+                },
+                new SqlParameter
+                {
+                    ParameterName = "ProductId",
+                    SqlDbType = System.Data.SqlDbType.UniqueIdentifier,
+                    Direction = System.Data.ParameterDirection.Output
+                },
+                new SqlParameter
+                {
+                    ParameterName = "ProductCount",
+                    SqlDbType = System.Data.SqlDbType.Int,
+                    Direction = System.Data.ParameterDirection.Output
+                },
+            };
+
+            var record = await appContext.FridgeProducts
+                .FromSqlRaw("FindEmptyProducts @FridgeId OUT, @ProductId OUT, @ProductCount OUT", parameteres)
+                .ToListAsync();
+
+            return record;
         }
     }
 }

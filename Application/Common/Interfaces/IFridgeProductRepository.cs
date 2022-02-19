@@ -10,5 +10,6 @@ namespace Application.Common.Interfaces
         Task<IEnumerable<FridgeProduct>> GetFridgeProductByFridgeIdAsync(Guid fridgeId);
         Task<FridgeProduct> GetFridgeProductByIdsAsync(Guid fridgeId, Guid productId);
         Task DeleteByIdsAsync(Guid fridgeId, Guid productId);
+        Task<IEnumerable<FridgeProduct>> FindRecordWhereProductQuantityAreZero();
     }
 }
