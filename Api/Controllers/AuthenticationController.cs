@@ -1,7 +1,6 @@
 ﻿using Application.Common.Interfaces;
 using Application.Models.User;
 using AutoMapper;
-using Infastructure.Persistence.Configurations;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -26,6 +25,11 @@ namespace Api.Controllers
             _authenticationManager = authenticationManager;
         }
 
+        /// <summary>
+        /// Registers a new user.
+        /// </summary>
+        /// <param name="userForRegistrationDto"></param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> RegisterUser([FromBody] UserForRegistrationDto userForRegistrationDto)
         {
@@ -57,6 +61,11 @@ namespace Api.Controllers
             return StatusCode(201);
         }
 
+        /// <summary>
+        /// Authentication. Returns a new JWT 
+        /// </summary>
+        /// <param name="userForAuthenticationDto"></param>
+        /// <returns></returns>
         [HttpPost("login")]
         public async Task<IActionResult> Authenticate([FromBody] UserForAuthenticationDto userForAuthenticationDto)
         {

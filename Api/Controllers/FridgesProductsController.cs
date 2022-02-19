@@ -5,8 +5,6 @@ using AutoMapper;
 using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -28,6 +26,11 @@ namespace Api.Controllers
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// Returns a list of products that are in a fridge with id
+        /// </summary>
+        /// <param name="fridgeId"></param>
+        /// <returns></returns>
         [HttpGet("fridge/{fridgeId}/products"), Authorize]
         public async Task<IActionResult> GetProductsByFridgeId([FromRoute] Guid fridgeId)
         {
@@ -44,6 +47,12 @@ namespace Api.Controllers
             return Ok(productDtos);
         }
 
+        /// <summary>
+        /// Returns information about a product by productId that is in a fridge with fridgeId 
+        /// </summary>
+        /// <param name="fridgeId"></param>
+        /// <param name="productId"></param>
+        /// <returns></returns>
         [HttpGet("fridge/{fridgeId}/product/{productId}"), Authorize]
         [ActionName(nameof(GetFridgeProductbyIds))]
         public async Task<IActionResult> GetFridgeProductbyIds([FromRoute] Guid fridgeId, Guid productId)
@@ -60,6 +69,11 @@ namespace Api.Controllers
             return Ok(fridgeProductDto);
         }
 
+        /// <summary>
+        /// Adds an existing product into a fridge
+        /// </summary>
+        /// <param name="fridgeProductDto"></param>
+        /// <returns></returns>
         [HttpPost, Authorize]
         public async Task<IActionResult> AddExistProductIntoFridge([FromBody] FridgeProductForCreationDto fridgeProductDto)
         {
@@ -96,6 +110,12 @@ namespace Api.Controllers
             }, fridgeProductToReturn);
         }
 
+        /// <summary>
+        /// Removes a product with productId from a fridge with fridgeId
+        /// </summary>
+        /// <param name="fridgeId"></param>
+        /// <param name="productId"></param>
+        /// <returns></returns>
         [HttpDelete("fridge/{fridgeId}/product/{productId}"), Authorize(Roles = "Administrator")]
         public async Task<IActionResult> DeleteFridgeProductByIds([FromRoute] Guid fridgeId, [FromRoute] Guid productId)
         {
@@ -112,21 +132,26 @@ namespace Api.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Calls the stored procedure that finds records in the 'Fridges_Products' table where 'ProductQuantity' equal zero
+        /// and adds products with a 'Quantity' from 'Products' table into 'Fridges_Products'
+        /// </summary>
+        /// <returns></returns>
         [HttpPut("StoredProcedure")]
         public async Task<IActionResult> AddProductWhereEmpty()
         {
             var records = await _unitOfWork.FridgeProduct.FindRecordWhereProductQuantityAreZero();
-
             if (records == null)
             {
                 _logger.LogInfo("There are no one record with 'Product Quantity' equal zero");
                 return NotFound();
             }
 
-            foreach(var record in records)
+            foreach (var record in records)
             {
                 await _unitOfWork.FridgeProduct.DeleteByIdsAsync(record.FridgeId, record.ProductId);
                 await _unitOfWork.SaveAsync();
+
                 await AddExistProductIntoFridge(new FridgeProductForCreationDto()
                 {
                     FridgeId = record.FridgeId,

@@ -26,6 +26,10 @@ namespace Api.Controllers
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// Returns a list of all products
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public async Task<IActionResult> GetProducts()
         {
@@ -35,6 +39,11 @@ namespace Api.Controllers
             return Ok(productDtos);
         }
 
+        /// <summary>
+        /// Returns a product by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("{id}"), Authorize]
         [ActionName(nameof(GetProductById))]
         public async Task<IActionResult> GetProductById([FromRoute] Guid id)
@@ -51,6 +60,11 @@ namespace Api.Controllers
             return Ok(productDto);
         }
 
+        /// <summary>
+        /// Creates a new product
+        /// </summary>
+        /// <param name="productDto"></param>
+        /// <returns></returns>
         [HttpPost, Authorize]
         public async Task<IActionResult> CreateProduct([FromBody] ProductForCreationDto productDto)
         {
@@ -76,6 +90,12 @@ namespace Api.Controllers
             return CreatedAtAction(nameof(GetProductById), new { id = productToReturn.Id }, productToReturn);
         }
 
+        /// <summary>
+        /// Updates a product fully by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="productForUpdateDto"></param>
+        /// <returns></returns>
         [HttpPut("{id}"), Authorize(Roles = "Administrator")]
         public async Task<IActionResult> UpdateProductFullyById([FromRoute] Guid id, [FromBody] ProductForUpdateDto productForUpdateDto)
         {
@@ -104,6 +124,11 @@ namespace Api.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Removes a product by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete("{id}"), Authorize(Roles = "Administrator")]
         public async Task<IActionResult> DeleteProductById([FromRoute] Guid id)
         {
@@ -120,6 +145,12 @@ namespace Api.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Updates a product partially by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="patchDock"></param>
+        /// <returns></returns>
         [HttpPatch("{id}"), Authorize(Roles = "Administrator")]
         public async Task<IActionResult> UpdateProductPartiallyById([FromRoute] Guid id,
                                                                     [FromBody] JsonPatchDocument<ProductForUpdateDto> patchDock)

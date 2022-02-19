@@ -26,6 +26,10 @@ namespace Api.Controllers
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// Returns a list of all fridges
+        /// </summary>
+        /// <returns></returns>
         [HttpGet, Authorize]
         public async Task<IActionResult> GetFridges()
         {
@@ -36,12 +40,16 @@ namespace Api.Controllers
             return Ok(fridgeDtos);
         }
 
+        /// <summary>
+        /// Returns a fridge by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("{id}"), Authorize]
         [ActionName(nameof(GetFridgeById))]
         public async Task<IActionResult> GetFridgeById([FromRoute] Guid id)
         {
             var fridge = await _unitOfWork.Fridge.GetByIdReadOnlyAsync(id);
-
             if (fridge == null)
             {
                 _logger.LogInfo($"A fridge with id: {id} doesn't exist in the database");
@@ -53,6 +61,11 @@ namespace Api.Controllers
             return Ok(fridgeDto);
         }
 
+        /// <summary>
+        /// Creates a new fridge
+        /// </summary>
+        /// <param name="fridgeForCreationDto"></param>
+        /// <returns></returns>
         [HttpPost, Authorize]
         public async Task<IActionResult> CreateFridge([FromBody] FridgeForCreationDto fridgeForCreationDto)
         {
@@ -72,11 +85,15 @@ namespace Api.Controllers
             return CreatedAtAction(nameof(GetFridgeById), new { fridgeToReturn.Id }, fridgeToReturn);
         }
 
+        /// <summary>
+        /// Removes a fridge by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete("{id}"), Authorize(Roles = "Administrator")]
         public async Task<IActionResult> DeleteFridgeById([FromRoute] Guid id)
         {
             var fridge = await _unitOfWork.Fridge.GetByIdReadOnlyAsync(id);
-
             if (fridge == null)
             {
                 _logger.LogInfo($"A fridge with id: {id} doesn't exist in the databse");
@@ -89,6 +106,12 @@ namespace Api.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Update a fridge fully by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="fridgeForUpdateDto"></param>
+        /// <returns></returns>
         [HttpPut("{id}"), Authorize(Roles = "Administrator")]
         public async Task<IActionResult> UpdateFridgeFullyById([FromRoute] Guid id ,[FromBody] FridgeForUpdateDto fridgeForUpdateDto)
         {
@@ -112,6 +135,12 @@ namespace Api.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Update a fridge patrially by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="patchDock"></param>
+        /// <returns></returns>
         [HttpPatch("{id}"), Authorize(Roles = "Administrator")]
         public async Task<IActionResult> UpdateFridgePartiallyById([FromRoute] Guid id,
                                                                    [FromBody] JsonPatchDocument<FridgeForUpdateDto> patchDock)
