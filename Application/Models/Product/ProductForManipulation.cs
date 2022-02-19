@@ -10,6 +10,6 @@ namespace Application.Models.Product
         public string Name { get; set; } = null!;
 
         [Range(0, 10, ErrorMessage = "'Quantity' property can't be less than 0 and more than 10'")]
-        public int? Quantity { get; set; }
+        public int Quantity { get; set; }
     }
 }
