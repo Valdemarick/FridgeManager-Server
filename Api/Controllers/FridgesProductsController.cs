@@ -5,6 +5,8 @@ using AutoMapper;
 using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -105,6 +107,34 @@ namespace Api.Controllers
             }
 
             await _unitOfWork.FridgeProduct.DeleteByIdsAsync(fridgeId, productId);
+            await _unitOfWork.SaveAsync();
+
+            return NoContent();
+        }
+
+        [HttpPut("StoredProcedure")]
+        public async Task<IActionResult> AddProductWhereEmpty()
+        {
+            var records = await _unitOfWork.FridgeProduct.FindRecordWhereProductQuantityAreZero();
+
+            if (records == null)
+            {
+                _logger.LogInfo("There are no one record with 'Product Quantity' equal zero");
+                return NotFound();
+            }
+
+            foreach(var record in records)
+            {
+                await _unitOfWork.FridgeProduct.DeleteByIdsAsync(record.FridgeId, record.ProductId);
+
+                await AddExistProductIntoFridge(new FridgeProductForCreationDto()
+                {
+                    FridgeId = record.FridgeId,
+                    ProductId = record.ProductId,
+                    ProductQuantity = (int)record.ProductQuantity
+                });
+            }
+
             await _unitOfWork.SaveAsync();
 
             return NoContent();
