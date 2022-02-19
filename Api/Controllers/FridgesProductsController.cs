@@ -126,12 +126,12 @@ namespace Api.Controllers
             foreach(var record in records)
             {
                 await _unitOfWork.FridgeProduct.DeleteByIdsAsync(record.FridgeId, record.ProductId);
-
+                await _unitOfWork.SaveAsync();
                 await AddExistProductIntoFridge(new FridgeProductForCreationDto()
                 {
                     FridgeId = record.FridgeId,
                     ProductId = record.ProductId,
-                    ProductQuantity = (int)record.ProductQuantity
+                    ProductQuantity = record.ProductQuantity
                 });
             }
 
