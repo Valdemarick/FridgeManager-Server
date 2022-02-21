@@ -13,7 +13,7 @@ namespace Infastructure.Persistence.Repositories
     {
         public FridgeRepository(IApplicationDbContext context, ILoggerManager logger) : base(context, logger) { }
 
-        public override async Task<IEnumerable<Fridge>> GetAllAsync() =>
+        public override async Task<List<Fridge>> GetAllAsync() =>
             await appContext.Set<Fridge>()
             .Include(f => f.FridgeModel)
             .AsNoTracking()

@@ -11,7 +11,7 @@ namespace Infastructure.Persistence.Repositories
     {
         public ProductRepository(IApplicationDbContext context, ILoggerManager logger) : base(context, logger) { }
 
-        public override async Task<IEnumerable<Product>> GetAllAsync() => 
+        public override async Task<List<Product>> GetAllAsync() => 
             await appContext.Set<Product>()
             .AsNoTracking()
             .ToListAsync();

@@ -35,7 +35,7 @@ namespace Infastructure.Persistence.Repositories
             appContext.Set<TEntity>().Remove(existing);
         }
 
-        public virtual async Task<IEnumerable<TEntity>> GetAllAsync() =>
+        public virtual async Task<List<TEntity>> GetAllAsync() =>
             await appContext.Set<TEntity>().ToListAsync();
 
         public virtual async Task<TEntity> GetByIdAsync(Guid id) =>

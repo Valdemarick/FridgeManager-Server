@@ -15,7 +15,7 @@ namespace Infastructure.Persistence.Repositories
     {
         public FridgeProductRepository(IApplicationDbContext context, ILoggerManager logger) : base(context, logger) { }
 
-        public async Task<IEnumerable<FridgeProduct>> GetFridgeProductByFridgeIdAsync(Guid fridgeId) =>
+        public async Task<List<FridgeProduct>> GetFridgeProductByFridgeIdAsync(Guid fridgeId) =>
             await appContext.Set<FridgeProduct>()
             .Where(fp => fp.FridgeId.Equals(fridgeId))
             .Include(fp => fp.Product)
@@ -43,7 +43,7 @@ namespace Infastructure.Persistence.Repositories
             appContext.Set<FridgeProduct>().Remove(existing);
         }
 
-        public async Task<IEnumerable<FridgeProduct>> FindRecordWhereProductQuantityAreZero()
+        public async Task<List<FridgeProduct>> FindRecordWhereProductQuantityAreZero()
         {
             var parameteres = new SqlParameter[]
             {

@@ -7,7 +7,7 @@ namespace Application.Common.Interfaces
 {
     public interface IGenericRepository<TEntity> where TEntity : BaseEntity
     {
-        Task<IEnumerable<TEntity>> GetAllAsync();
+        Task<List<TEntity>> GetAllAsync();
         Task<TEntity> GetByIdReadOnlyAsync(Guid id);
         Task<TEntity> GetByIdAsync(Guid id);
         Task CreateAsync(TEntity entity);
