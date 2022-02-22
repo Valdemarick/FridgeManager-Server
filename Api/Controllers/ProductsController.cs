@@ -124,7 +124,7 @@ namespace Api.Controllers
             if (fridge == null)
             {
                 _logger.LogError($"A product with id: {id} doesn't exist in the database");
-                return BadRequest();
+                return NotFound();
             }
 
             await _unitOfWork.Product.DeleteAsync(fridge.Id);
