@@ -32,7 +32,7 @@ namespace Tests.Tests
         }
 
         [Fact]
-        public async Task GetFridgesAsync_Returns_Ok_WithData()
+        public async Task GetFridgesAsync_ReturnsOk_WithData()
         {
             //Arange
             _fakeUnitOfWork.Mock.Setup(uow => uow.Fridge.GetAllAsync()).Returns(Task.FromResult(GetFridges()));
@@ -61,7 +61,7 @@ namespace Tests.Tests
         }
 
         [Fact]
-        public async Task GetFridgeById_InvalidGuid_Returns_NotFoundResult()
+        public async Task GetFridgeById_InvalidGuid_ReturnNotFoundResult()
         {
             //Arange
             _fakeUnitOfWork.Mock.Setup(uow => uow.Fridge.GetByIdReadOnlyAsync(Guid.NewGuid()))
@@ -86,7 +86,7 @@ namespace Tests.Tests
 
         [Theory]
         [InlineData("2c08aafa-01ec-4902-b984-99b5a80122a3")]
-        public async Task GetFridgeById_ValidGuid_Returns_Ok_WithData(string id)
+        public async Task GetFridgeById_ValidGuid_ReturnOk_WithData(string id)
         {
             //Arange
             Guid guid = new Guid(id);
@@ -121,7 +121,7 @@ namespace Tests.Tests
         }
 
         [Fact]
-        public async Task CreateFridge_InvalidData_ReturnsInvalidModelState()
+        public async Task CreateFridge_InvalidModelState_ReturnUnprocessableEntity()
         {
             //Arrange
             _controller.ModelState.AddModelError("OwnerName", "Much long");
@@ -138,7 +138,7 @@ namespace Tests.Tests
         }
 
         [Fact]
-        public async Task CreateFridge_ValidData_Returns_CreatedAtActionResult_WithData()
+        public async Task CreateFridge_ValidData_ReturnCreatedAtActionResult_WithData()
         {
             Guid guid = new Guid("2c08aafa-01ec-4902-b984-99b5a80122a3");
 
@@ -171,48 +171,115 @@ namespace Tests.Tests
             Assert.Equal(fridgeDto.OwnerName, fridgeForCreationDto.OwnerName);
         }
 
-        //[Fact]
-        //public async Task DeleteFridgeById_InvalidGuid_Returns_NotFound()
-        //{
-        //    //Arrange
-        //    Guid guid = new Guid("2c08aafa-01ec-4902-b984-99b5a80122a3");
+        [Fact]
+        public async Task DeleteFridgeById_InvalidGuidPasses_ReturnNoContent()
+        {
+            //Arrange
+            Guid guid = new Guid("2c08aafa-01ec-4902-b984-99b5a80122a3");
 
-        //    _fakeUnitOfWork.Mock.Setup(uow => uow.Fridge.DeleteAsync(Guid.NewGuid())).Returns(Task.FromResult(new Fridge()
-        //    {
-        //        Id = guid,
-        //        OwnerName = "null",
-        //        FridgeModelId = Guid.NewGuid()
-        //    }));
+            _fakeUnitOfWork.Mock.Setup(uow => uow.Fridge.GetByIdReadOnlyAsync(Guid.NewGuid()));
 
-        //    //Act 
-        //    var response = await _controller.DeleteFridgeById(Guid.NewGuid());
+            //Act 
+            var response = await _controller.DeleteFridgeById(Guid.NewGuid());
 
-        //    //Assert
-        //    Assert.NotNull(response);
-        //    Assert.IsType<NotFoundResult>(response);
-        //}
+            //Assert
+            Assert.NotNull(response);
+            Assert.IsType<NotFoundResult>(response);
+        }
 
-        //[Fact]
-        //public async Task DeleteFridbeById_ValidGuid_Returns_NoContent()
-        //{
-        //    //Arrange 
-        //    Guid guid = new Guid("2c08aafa-01ec-4902-b984-99b5a80122a3");
+        [Fact]
+        public async Task DeleteFridgeById_ValidGuidPasses_ReturnNoContent()
+        {
+            //Arrange
+            Guid guid = new Guid("2c08aafa-01ec-4902-b984-99b5a80122a3");
 
-        //    _fakeUnitOfWork.Mock.Setup(uow => uow.Fridge.DeleteAsync(guid)).Returns(Task.FromResult(GetFridges()));
+            var fridge = new Fridge()
+            {
+                Id = guid,
+                OwnerName = "Jack"
+            };
 
-        //    //Act
-        //    var response = await _controller.DeleteFridgeById(guid);
+            _fakeUnitOfWork.Mock.Setup(uow => uow.Fridge.GetByIdReadOnlyAsync(guid)).Returns(Task.FromResult(fridge));
 
-        //    //Assert
-        //    Assert.IsType<NoContentResult>(response);
-        //}
+            _fakeUnitOfWork.Mock.Setup(uow => uow.Fridge.DeleteAsync(guid))
+                .Returns(Task.FromResult(fridge));
+            //Act 
+            var response = await _controller.DeleteFridgeById(guid);
 
-        //[Fact]
-        //public async Task UpdateFridgeById_InvalidGuid_Returns_NotFound()
-        //{
-        //    Guid id = new Guid();
-        //}
+            //Assert
+            Assert.NotNull(response);
+            Assert.IsType<NoContentResult>(response);
 
+            Assert.Equal(204, (response as NoContentResult).StatusCode);
+        }
+
+        [Fact]
+        public async Task UpdateFridgeById_InvalidModelState_ReturnUnprocessableEntity()
+        {
+            //Arrange
+            _controller.ModelState.AddModelError("OwnerName", "Incorrect value");
+
+            //Act
+            var response = await _controller.UpdateFridgeFullyById(Guid.NewGuid(), new FridgeForUpdateDto());
+
+            //Assert
+            Assert.NotNull(response);
+            Assert.IsType<UnprocessableEntityObjectResult>(response);
+        }
+
+        [Fact]
+        public async Task UpdateFridgeById_InvalidIdPasses_ReturnNotFound()
+        {
+            //Arrange
+            Guid id = Guid.NewGuid();
+
+            _fakeUnitOfWork.Mock.Setup(uow => uow.Fridge.GetByIdAsync(Guid.NewGuid()))
+                .Returns(Task.FromResult(new Fridge()
+                {
+                    Id = id,
+                    FridgeModelId = Guid.NewGuid(),
+                    OwnerName = "jack"
+                }));
+
+            //Act
+            var response = await _controller.UpdateFridgeFullyById(id, new FridgeForUpdateDto());
+
+            //Assert
+            Assert.NotNull(response);
+            Assert.IsType<NotFoundResult>(response);
+        }
+
+        [Fact]
+        public async Task UpdateFridgeById_ValidIdPasses_ReturnNoContent()
+        {
+            Guid id = Guid.NewGuid();
+
+            var fridgeBeforeUpdate = new Fridge()
+            {
+                Id = id,
+                FridgeModelId = Guid.NewGuid(),
+                OwnerName = "jack"
+            };
+
+            var fridgeAfterUpdate = new FridgeForUpdateDto() { ModelId = Guid.NewGuid(), OwnerName = "Petr" };
+
+            _fakeUnitOfWork.Mock.Setup(uow => uow.Fridge.GetByIdAsync(id))
+                .Returns(Task.FromResult(fridgeBeforeUpdate));
+
+            //Act
+            var response = await _controller.UpdateFridgeFullyById(id, fridgeAfterUpdate);
+
+            //Assert
+            Assert.NotNull(response);
+            Assert.IsType<NoContentResult>(response);
+
+            var result = response as NoContentResult;
+
+            Assert.NotNull(result);
+            Assert.Equal(204, result.StatusCode);
+
+            Assert.Equal(fridgeBeforeUpdate.OwnerName, fridgeAfterUpdate.OwnerName);
+        }
         private List<Fridge> GetFridges()
         {
             return new List<Fridge>()

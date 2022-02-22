@@ -118,7 +118,7 @@ namespace Tests.Tests
         }
 
         [Fact]
-        public async Task CreateFridge_InvalidModelState_ReturnUnprocessableEntity()
+        public async Task CreateProduct_InvalidModelState_ReturnUnprocessableEntity()
         {
             //Arrange
             _controller.ModelState.AddModelError("Quantity", "Wrong input data");
@@ -140,7 +140,7 @@ namespace Tests.Tests
         }
 
         [Fact]
-        public async Task CreateFridge_ValidModelState_ReturnCreatedAtAction_WithData()
+        public async Task CreateProduct_ValidModelState_ReturnCreatedAtAction_WithData()
         {
             //Arrange
             Guid id = Guid.NewGuid();
@@ -174,6 +174,128 @@ namespace Tests.Tests
             Assert.IsType<ProductDto>(productDto);
 
             Assert.Equal("Apple", productDto.Name);
+        }
+
+        [Fact]
+        public async Task DeleteProductById_InvalidProductIdPasses_RetunrNotFound()
+        {
+            //Act
+            _fakeUnitOfWork.Mock.Setup(uow => uow.Product.GetByIdReadOnlyAsync(Guid.NewGuid()))
+                .Returns(Task.FromResult(new Product()
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Appple",
+                    Quantity = 2
+                }));
+
+            //Act
+            var response = await _controller.DeleteProductById(Guid.NewGuid());
+
+            //Assert
+            Assert.NotNull(response);
+            Assert.IsType<NotFoundResult>(response);
+        }
+
+        [Fact]
+        public async Task DeleteProductById_ValidProductIdPasses_ReturnNoContent()
+        {
+            //Arrange
+            Guid id = Guid.NewGuid();
+
+            _fakeUnitOfWork.Mock.Setup(uow => uow.Product.GetByIdReadOnlyAsync(id))
+                .Returns(Task.FromResult(new Product()
+                {
+                    Id = id,
+                    Name = "Apple",
+                    Quantity = 3
+                }));
+            _fakeUnitOfWork.Mock.Setup(uow => uow.Product.DeleteAsync(id));
+
+            //Act
+            var response = await _controller.DeleteProductById(id);
+
+            //Assert 
+            Assert.NotNull(response);
+            Assert.IsType<NoContentResult>(response);
+
+        }
+
+        [Fact]
+        public async Task UpdateProductFullyById_InvalidModelState_ReturnUnprocessableEntity()
+        {
+            //Arrange
+            _controller.ModelState.AddModelError("Quantity", "Incorrect value");
+
+            //Act
+            var response = await _controller.UpdateProductFullyById(Guid.NewGuid(), new ProductForUpdateDto()
+            {
+                Name = "Apple",
+                Quantity = 12
+            });
+
+            //Assert
+            Assert.NotNull(response);
+            Assert.IsType<UnprocessableEntityObjectResult>(response);
+        }
+        
+        [Fact]
+        public async Task UpdateProductFullyById_InvalidIdPasses_ReturnNotFound()
+        {
+            //Arrange
+            Guid id = Guid.NewGuid();
+
+            _fakeUnitOfWork.Mock.Setup(uow => uow.Product.GetByIdAsync(Guid.NewGuid())).Returns(Task.FromResult(new Product()
+            {
+                Id = id,
+                Name = "Apple",
+                Quantity = 1
+            }));
+
+            //Act
+            var response = await _controller.UpdateProductFullyById(Guid.NewGuid(), new ProductForUpdateDto()
+            {
+                Name = "Banana",
+                Quantity = 2
+            });
+
+            //Assert
+            Assert.NotNull(response);
+            Assert.IsType<NotFoundResult>(response);
+        }
+
+        [Fact]
+        public async Task UpdateProductFullyById_ValidIdPasses_ReturnNoContent()
+        {
+            Guid id = Guid.NewGuid();
+
+            var product = new Product()
+            {
+                Id = id,
+                Name = "Apple",
+                Quantity = 1
+            };
+
+            _fakeUnitOfWork.Mock.Setup(uow => uow.Product.GetByIdAsync(id)).Returns(Task.FromResult(product));
+
+            var productForUpdateDto = new ProductForUpdateDto()
+            {
+                Name = "Banana",
+                Quantity = 2
+            };
+
+            //Act
+            var response = await _controller.UpdateProductFullyById(id, productForUpdateDto);
+
+            //Assert
+            Assert.NotNull(response);
+            Assert.IsType<NoContentResult>(response);
+
+            var result = response as NoContentResult;
+
+            Assert.NotNull(result);
+            Assert.Equal(204, result.StatusCode);
+
+            Assert.Equal(product.Name, productForUpdateDto.Name);
         }
 
         private List<Product> GetProducts()
