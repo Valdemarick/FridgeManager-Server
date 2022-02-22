@@ -77,12 +77,6 @@ namespace Api.Controllers
         [HttpPost, Authorize]
         public async Task<IActionResult> AddExistProductIntoFridge([FromBody] FridgeProductForCreationDto fridgeProductDto)
         {
-            if (fridgeProductDto == null)
-            {
-                _logger.LogError($"The sent object is null");
-                return BadRequest();
-            }
-
             if (!ModelState.IsValid)
             {
                 _logger.LogError("Invalid model state for 'FridgeProductForCreationDto' object");
@@ -94,6 +88,20 @@ namespace Api.Controllers
             {
                 _logger.LogError($"A record already exist in the database");
                 return BadRequest();
+            }
+
+            var fridge = await _unitOfWork.Fridge.GetByIdReadOnlyAsync(fridgeProductDto.FridgeId);
+            if (fridge == null)
+            {
+                _logger.LogError($"A fridge with id:{fridgeProductDto.FridgeId} doesn't exist in the database");
+                return NotFound();
+            }
+
+            var product = await _unitOfWork.Product.GetByIdReadOnlyAsync(fridgeProductDto.ProductId);
+            if (product == null)
+            {
+                _logger.LogError($"A product with id:{fridgeProductDto.ProductId} doesn't exist in the database");
+                return NotFound();
             }
 
             var fridgeProduct = _mapper.Map<FridgeProduct>(fridgeProductDto);
@@ -122,7 +130,7 @@ namespace Api.Controllers
             var fridgeProduct = await _unitOfWork.FridgeProduct.GetFridgeProductByIdsAsync(fridgeId, productId);
             if (fridgeProduct == null)
             {
-                _logger.LogInfo($"");
+                _logger.LogInfo($"A record with fridgeID:{fridgeId} and productID:{productId} doesn't exist in the database");
                 return NotFound();
             }
 
@@ -137,7 +145,7 @@ namespace Api.Controllers
         /// and adds products with a 'Quantity' from 'Products' table into 'Fridges_Products'
         /// </summary>
         /// <returns></returns>
-        [HttpPut("StoredProcedure")]
+        [HttpPut("where-products-are-empty")]
         public async Task<IActionResult> AddProductWhereEmpty()
         {
             var records = await _unitOfWork.FridgeProduct.FindRecordWhereProductQuantityAreZero();

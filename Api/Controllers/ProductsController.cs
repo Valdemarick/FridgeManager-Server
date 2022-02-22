@@ -68,12 +68,6 @@ namespace Api.Controllers
         [HttpPost, Authorize]
         public async Task<IActionResult> CreateProduct([FromBody] ProductForCreationDto productDto)
         {
-            if (productDto == null)
-            {
-                _logger.LogError($"The sent object is null");
-                return BadRequest();
-            }
-
             if (!ModelState.IsValid)
             {
                 _logger.LogError($"Invalid model state for 'ProductForUpdate' object");
@@ -99,12 +93,6 @@ namespace Api.Controllers
         [HttpPut("{id}"), Authorize(Roles = "Administrator")]
         public async Task<IActionResult> UpdateProductFullyById([FromRoute] Guid id, [FromBody] ProductForUpdateDto productForUpdateDto)
         {
-            if (productForUpdateDto == null)
-            {
-                _logger.LogError("The object sent from client is null");
-                return BadRequest();
-            }
-
             if (!ModelState.IsValid)
             {
                 _logger.LogWarn("Invalid model state for 'ProductForUpdate' object");
