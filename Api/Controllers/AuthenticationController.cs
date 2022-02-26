@@ -33,12 +33,6 @@ namespace Api.Controllers
         [HttpPost]
         public async Task<IActionResult> RegisterUser([FromBody] UserForRegistrationDto userForRegistrationDto)
         {
-            if (userForRegistrationDto == null)
-            {
-                _logger.LogError("The sent object is null");
-                return BadRequest();
-            }
-
             if (!ModelState.IsValid)
             {
                 _logger.LogWarn("Invalid model state for 'UserForRegistrationDto' object");
@@ -69,12 +63,6 @@ namespace Api.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Authenticate([FromBody] UserForAuthenticationDto userForAuthenticationDto)
         {
-            if (userForAuthenticationDto == null)
-            {
-                _logger.LogError("The sent object is null");
-                return BadRequest();
-            }
-
             if (!ModelState.IsValid)
             {
                 _logger.LogWarn("Invalid model state for 'UserForAuthenticationDto' object");
