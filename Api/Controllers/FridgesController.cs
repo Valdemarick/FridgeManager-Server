@@ -145,12 +145,6 @@ namespace Api.Controllers
         public async Task<IActionResult> UpdateFridgePartiallyById([FromRoute] Guid id,
                                                                    [FromBody] JsonPatchDocument<FridgeForUpdateDto> patchDock)
         {
-            if (patchDock == null)
-            {
-                _logger.LogError("The sent object is null");
-                return BadRequest();
-            }
-
             var fridge = await _unitOfWork.Fridge.GetByIdAsync(id);
             if (fridge == null)
             {

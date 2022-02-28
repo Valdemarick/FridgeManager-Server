@@ -143,12 +143,6 @@ namespace Api.Controllers
         public async Task<IActionResult> UpdateProductPartiallyById([FromRoute] Guid id,
                                                                     [FromBody] JsonPatchDocument<ProductForUpdateDto> patchDock)
         {
-            if (patchDock == null)
-            {
-                _logger.LogError("The sent object is null");
-                return BadRequest();
-            }
-
             var product = await _unitOfWork.Product.GetByIdAsync(id);
             if (product == null)
             {
