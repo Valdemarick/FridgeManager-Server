@@ -8,7 +8,7 @@ namespace Domain.Entities
     public class Fridge : BaseEntity
     {
         public string? OwnerName { get; set; }
-
+        public string? Description { get; set; }
         public Guid FridgeModelId { get; set; }
         public FridgeModel FridgeModel { get; set; } = null!;
 

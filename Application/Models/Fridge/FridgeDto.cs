@@ -9,5 +9,6 @@ namespace Application.Models.Fridge
         public string? OwnerName { get; set; }
         public string Manufacturer { get; set; } = null!;
         public int? ProductionYear { get; set; }
+        public string? Description { get; set; }
     }
 }
