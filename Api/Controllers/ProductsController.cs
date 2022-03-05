@@ -120,14 +120,14 @@ namespace Api.Controllers
         [HttpDelete("{id}"), Authorize(Roles = "Administrator")]
         public async Task<IActionResult> DeleteProductById([FromRoute] Guid id)
         {
-            var fridge = await _unitOfWork.Product.GetByIdReadOnlyAsync(id);
-            if (fridge == null)
+            var product = await _unitOfWork.Product.GetByIdReadOnlyAsync(id);
+            if (product == null)
             {
                 _logger.LogError($"A product with id: {id} doesn't exist in the database");
                 return NotFound();
             }
 
-            await _unitOfWork.Product.DeleteAsync(fridge.Id);
+            await _unitOfWork.Product.DeleteAsync(product.Id);
             await _unitOfWork.SaveAsync();
 
             return NoContent();
