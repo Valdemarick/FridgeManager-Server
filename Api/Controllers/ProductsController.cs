@@ -30,7 +30,7 @@ namespace Api.Controllers
         /// Returns a list of all products
         /// </summary>
         /// <returns></returns>
-        [HttpGet]
+        [HttpGet, Authorize]
         public async Task<IActionResult> GetProducts()
         {
             var products = await _unitOfWork.Product.GetAllAsync();
