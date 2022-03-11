@@ -43,7 +43,7 @@ namespace Infastructure.Persistence.Repositories
             appContext.Set<FridgeProduct>().Remove(existing);
         }
 
-        public async Task<List<FridgeProduct>> FindRecordWhereProductQuantityAreZero()
+        public async Task<List<FridgeProduct>> FindRecordWhereProductQuantityIsZero()
         {
             var parameteres = new SqlParameter[]
             {

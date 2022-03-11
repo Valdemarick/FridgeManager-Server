@@ -10,6 +10,6 @@ namespace Application.Common.Interfaces
         Task<List<FridgeProduct>> GetFridgeProductByFridgeIdAsync(Guid fridgeId);
         Task<FridgeProduct> GetFridgeProductByIdsAsync(Guid fridgeId, Guid productId);
         Task DeleteByIdsAsync(Guid fridgeId, Guid productId);
-        Task<List<FridgeProduct>> FindRecordWhereProductQuantityAreZero();
+        Task<List<FridgeProduct>> FindRecordWhereProductQuantityIsZero();
     }
 }

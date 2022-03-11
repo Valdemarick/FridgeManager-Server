@@ -148,7 +148,7 @@ namespace Api.Controllers
         [HttpPut("where-products-are-empty")]
         public async Task<IActionResult> AddProductWhereEmpty()
         {
-            var records = await _unitOfWork.FridgeProduct.FindRecordWhereProductQuantityAreZero();
+            var records = await _unitOfWork.FridgeProduct.FindRecordWhereProductQuantityIsZero();
             if (records == null)
             {
                 _logger.LogInfo("There are no one record with 'Product Quantity' equal zero");
