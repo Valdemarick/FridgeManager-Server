@@ -21,46 +21,56 @@ namespace Infastructure.Persistence.Repositories
             this.logger = logger;
         }
 
-        public virtual async Task CreateAsync(TEntity entity) =>
+        public virtual async Task<List<TEntity>> GetAllAsync() =>
             await appContext.Set<TEntity>()
-            .AddAsync(entity);
+            .ToListAsync();
+
+        public virtual async Task<TEntity> GetByIdAsync(Guid id) =>
+            await appContext.Set<TEntity>()
+            .Where(entity => entity.Id == id)
+            .FirstOrDefaultAsync();
+
+        public virtual async Task<TEntity> GetByIdReadOnlyAsync(Guid id) =>
+            await appContext.Set<TEntity>()
+            .Where(p => p.Id.Equals(id))
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
+
+        public virtual async Task<TEntity> CreateAsync(TEntity entity)
+        {
+            if (entity == null)
+            {
+                throw new ArgumentNullException(nameof(TEntity));
+            }
+
+            await appContext.Set<TEntity>().AddAsync(entity);
+            await appContext.SaveChangesAsync();
+
+            return entity;
+        }
 
         public virtual async Task DeleteAsync(Guid id)
         {
             var existing = await appContext.Set<TEntity>().FindAsync(id);
             if (existing == null)
             {
-                logger.LogError($"An entity with id: {id} doesn't exist in the database");
-                return;
+                throw new ArgumentException($"A fridge with id: {id} doesn't exist in the database");
             }
 
             appContext.Set<TEntity>().Remove(existing);
+            await appContext.SaveChangesAsync();
         }
-
-        public virtual async Task<List<TEntity>> GetAllAsync() =>
-            await appContext.Set<TEntity>().ToListAsync();
-
-        public virtual async Task<TEntity> GetByIdAsync(Guid id) =>
-            await appContext.Set<TEntity>()
-            .FindAsync(id);
-
-        public virtual async Task<TEntity> GetByIdReadOnlyAsync(Guid id) =>
-            await appContext.Set<TEntity>()
-            .Where(p => p.Id.Equals(id))
-            .AsNoTracking()
-            .SingleOrDefaultAsync();
 
         public virtual async Task UpdateAsync(TEntity entity)
         {
-            var existing = await appContext.Set<TEntity>().FindAsync(entity.Id);
-
-            if (existing == null)
+            var isExists = await appContext.Set<TEntity>().AnyAsync(e => e.Id.Equals(entity.Id));
+            if (!isExists)
             {
-                logger.LogError($"The entity of type {typeof(TEntity)} with id: {entity.Id} doent's exist in the database");
-                return;
+                throw new ArgumentException($"A fridge with id:{entity.Id} doesn't exist in the database");
             }
 
             appContext.Set<TEntity>().Update(entity);
+            await appContext.SaveChangesAsync();
         }
     }
 }

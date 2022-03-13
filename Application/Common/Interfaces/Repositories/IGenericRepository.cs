@@ -10,7 +10,7 @@ namespace Application.Common.Interfaces.Repositories
         Task<List<TEntity>> GetAllAsync();
         Task<TEntity> GetByIdReadOnlyAsync(Guid id);
         Task<TEntity> GetByIdAsync(Guid id);
-        Task CreateAsync(TEntity entity);
+        Task<TEntity> CreateAsync(TEntity entity);
         Task UpdateAsync(TEntity entity);
         Task DeleteAsync(Guid id);
     }
