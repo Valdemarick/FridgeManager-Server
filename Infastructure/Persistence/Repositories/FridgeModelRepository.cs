@@ -1,7 +1,7 @@
-﻿using Application.Common.Interfaces;
+﻿using Application.Common.Interfaces.Contexts;
+using Application.Common.Interfaces.Managers;
+using Application.Common.Interfaces.Repositories;
 using Domain.Entities;
-using Infastructure.Persistence.Contexts;
-using Microsoft.EntityFrameworkCore;
 
 namespace Infastructure.Persistence.Repositories
 {

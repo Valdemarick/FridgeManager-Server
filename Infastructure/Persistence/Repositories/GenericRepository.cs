@@ -1,4 +1,6 @@
-﻿using Application.Common.Interfaces;
+﻿using Application.Common.Interfaces.Contexts;
+using Application.Common.Interfaces.Managers;
+using Application.Common.Interfaces.Repositories;
 using Domain.Common;
 using Microsoft.EntityFrameworkCore;
 using System;

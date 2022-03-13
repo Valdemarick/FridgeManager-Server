@@ -1,5 +1,6 @@
-﻿using Application.Common.Interfaces;
-using Infastructure.Persistence.Contexts;
+﻿using Application.Common.Interfaces.Contexts;
+using Application.Common.Interfaces.Managers;
+using Application.Common.Interfaces.Repositories;
 using System.Threading.Tasks;
 
 namespace Infastructure.Persistence.Repositories
@@ -16,7 +17,7 @@ namespace Infastructure.Persistence.Repositories
 
         public UnitOfWork(IApplicationDbContext applicationContext, ILoggerManager logger)
         {
-            _appContext = applicationContext; 
+            _appContext = applicationContext;
             _logger = logger;
         }
 

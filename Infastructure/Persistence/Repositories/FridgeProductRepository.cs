@@ -1,13 +1,13 @@
-﻿using Application.Common.Interfaces;
+﻿using Application.Common.Interfaces.Contexts;
+using Application.Common.Interfaces.Managers;
+using Application.Common.Interfaces.Repositories;
 using Domain.Entities;
-using Infastructure.Persistence.Contexts;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.Data.SqlClient;
 
 namespace Infastructure.Persistence.Repositories
 {
@@ -26,7 +26,7 @@ namespace Infastructure.Persistence.Repositories
             await appContext.Set<FridgeProduct>()
             .Where(fp => fp.FridgeId.Equals(fridgeId) && fp.ProductId.Equals(productId))
             .Include(fp => fp.Product)
-            .AsNoTracking() 
+            .AsNoTracking()
             .SingleOrDefaultAsync();
 
         public async Task DeleteByIdsAsync(Guid fridgeId, Guid productId)
