@@ -1,5 +1,5 @@
 using Api.ServiceExtensions;
-using Application.Common.Interfaces;
+using Application.Common.Interfaces.Managers;
 using Application.Common.Mappings;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -37,14 +37,15 @@ namespace Api
             services.ConfigureIdentity();
             services.ConfigureJWT(Configuration);
             services.ConfigureAuthenticationManager();
-            services.AddAutoMapper(typeof(FridgeProfile), typeof(ProductProfile), typeof(FridgeProductProfile));
+            services.AddAutoMapper(typeof(FridgeProfile), typeof(ProductProfile), typeof(FridgeProductProfile), typeof(FridgeModelProfile));
             services.AddControllers().AddNewtonsoftJson();
+            services.AddSwaggerGen(options =>
             //.AddJsonOptions(x =>
             //    x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve).
             services.Configure<ApiBehaviorOptions>(options =>
             {
                 options.SuppressModelStateInvalidFilter = true;
-            });
+            }));
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Api", Version = "v1" });

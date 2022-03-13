@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces;
+﻿using Application.Common.Interfaces.Contexts;
+using Application.Common.Interfaces.Managers;
 using Application.Models.User;
 using Infastructure.Persistence.Contexts;
 using Infastructure.Persistence.Repositories;

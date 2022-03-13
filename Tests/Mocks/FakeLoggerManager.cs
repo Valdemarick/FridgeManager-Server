@@ -1,4 +1,4 @@
-﻿using Application.Common.Interfaces;
+﻿using Application.Common.Interfaces.Managers;
 using Moq;
 
 namespace Tests.Mocks
