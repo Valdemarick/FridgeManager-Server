@@ -1,12 +1,8 @@
-﻿using Application.Common.Interfaces;
+﻿using Application.Common.Interfaces.Services;
 using Application.Models.Fridge;
-using AutoMapper;
-using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Api.Controllers
@@ -15,15 +11,11 @@ namespace Api.Controllers
     [ApiController]
     public class FridgesController : ControllerBase
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly ILoggerManager _logger;
-        private readonly IMapper _mapper;
+        private readonly IFridgeService _fridgeService;
 
-        public FridgesController(ILoggerManager logger, IUnitOfWork unitOfWork, IMapper mapper)
+        public FridgesController(IFridgeService fridgeService)
         {
-            _logger = logger;
-            _unitOfWork = unitOfWork;
-            _mapper = mapper;
+            _fridgeService = fridgeService;
         }
 
         /// <summary>
@@ -33,11 +25,8 @@ namespace Api.Controllers
         [HttpGet, Authorize]
         public async Task<IActionResult> GetFridges()
         {
-            var fridges = await _unitOfWork.Fridge.GetAllAsync();
-
-            var fridgeDtos = _mapper.Map<List<FridgeDto>>(fridges);
-
-            return Ok(fridgeDtos);
+            var fridges = await _fridgeService.GetAllFridgesAsync();
+            return Ok(fridges);
         }
 
         /// <summary>
@@ -49,16 +38,13 @@ namespace Api.Controllers
         [ActionName(nameof(GetFridgeById))]
         public async Task<IActionResult> GetFridgeById([FromRoute] Guid id)
         {
-            var fridge = await _unitOfWork.Fridge.GetByIdReadOnlyAsync(id);
+            var fridge = await _fridgeService.GetFridgeByIdAsync(id);
             if (fridge == null)
             {
-                _logger.LogInfo($"A fridge with id: {id} doesn't exist in the database");
                 return NotFound();
             }
 
-            var fridgeDto = _mapper.Map<FridgeDto>(fridge);
-
-            return Ok(fridgeDto);
+            return Ok(fridge);
         }
 
         /// <summary>
@@ -71,18 +57,11 @@ namespace Api.Controllers
         {
             if (!ModelState.IsValid)
             {
-                _logger.LogWarn("Invalid model state for 'FridgeForCreation' object");
                 return UnprocessableEntity(ModelState);
             }
 
-            var fridge = _mapper.Map<Fridge>(fridgeForCreationDto);
-
-            await _unitOfWork.Fridge.CreateAsync(fridge);
-            await _unitOfWork.SaveAsync();
-
-            var fridgeToReturn = _mapper.Map<FridgeDto>(fridge);
-
-            return CreatedAtAction(nameof(GetFridgeById), new { fridgeToReturn.Id }, fridgeToReturn);
+            var createdFridge = await _fridgeService.CreateFridgeAsync(fridgeForCreationDto);
+            return RedirectToAction(nameof(GetFridgeById), new { id = createdFridge.Id });
         }
 
         /// <summary>
@@ -93,16 +72,7 @@ namespace Api.Controllers
         [HttpDelete("{id}"), Authorize(Roles = "Administrator")]
         public async Task<IActionResult> DeleteFridgeById([FromRoute] Guid id)
         {
-            var fridge = await _unitOfWork.Fridge.GetByIdReadOnlyAsync(id);
-            if (fridge == null)
-            {
-                _logger.LogInfo($"A fridge with id: {id} doesn't exist in the databse");
-                return NotFound();
-            }
-
-            await _unitOfWork.Fridge.DeleteAsync(fridge.Id);
-            await _unitOfWork.SaveAsync();
-
+            await _fridgeService.DeleteFridgeByIdAsync(id);
             return NoContent();
         }
 
@@ -113,62 +83,56 @@ namespace Api.Controllers
         /// <param name="fridgeForUpdateDto"></param>
         /// <returns></returns>
         [HttpPut("{id}"), Authorize(Roles = "Administrator")]
-        public async Task<IActionResult> UpdateFridgeFullyById([FromRoute] Guid id ,[FromBody] FridgeForUpdateDto fridgeForUpdateDto)
+        public async Task<IActionResult> UpdateFridgeFullyById([FromRoute] Guid id, [FromBody] FridgeForUpdateDto fridgeForUpdateDto)
         {
             if (!ModelState.IsValid)
             {
-                _logger.LogWarn("Invalid model state for 'FridgeForCreationDto' object");
                 return UnprocessableEntity(ModelState);
             }
 
-            var fridge = await _unitOfWork.Fridge.GetByIdAsync(id);
-            if (fridge == null)
+            if (id != fridgeForUpdateDto.Id)
             {
-                _logger.LogInfo($"A fridge with id: {id} doesn't exist in the database");
-                return NotFound();
+                return BadRequest("Incorrect id");
             }
 
-            _mapper.Map(fridgeForUpdateDto, fridge);
-
-            await _unitOfWork.SaveAsync();
-
+            await _fridgeService.UpdateFridgeById(fridgeForUpdateDto);
             return NoContent();
         }
 
-        /// <summary>
-        /// Update a fridge patrially by id
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="patchDock"></param>
-        /// <returns></returns>
-        [HttpPatch("{id}"), Authorize(Roles = "Administrator")]
-        public async Task<IActionResult> UpdateFridgePartiallyById([FromRoute] Guid id,
-                                                                   [FromBody] JsonPatchDocument<FridgeForUpdateDto> patchDock)
-        {
-            var fridge = await _unitOfWork.Fridge.GetByIdAsync(id);
-            if (fridge == null)
-            {
-                _logger.LogWarn($"A fridge with id: {id} doesn't exist in the database");
-                return NotFound();
-            }
+        //    /// <summary>
+        //    /// Update a fridge patrially by id
+        //    /// </summary>
+        //    /// <param name="id"></param>
+        //    /// <param name="patchDock"></param>
+        //    /// <returns></returns>
+        //    [HttpPatch("{id}"), Authorize(Roles = "Administrator")]
+        //    public async Task<IActionResult> UpdateFridgePartiallyById([FromRoute] Guid id,
+        //                                                               [FromBody] JsonPatchDocument<FridgeForUpdateDto> patchDock)
+        //    {
+        //        var fridge = await _unitOfWork.Fridge.GetByIdAsync(id);
+        //        if (fridge == null)
+        //        {
+        //            _logger.LogWarn($"A fridge with id: {id} doesn't exist in the database");
+        //            return NotFound();
+        //        }
 
-            var fridgeToPatch = _mapper.Map<FridgeForUpdateDto>(fridge);
+        //        var fridgeToPatch = _mapper.Map<FridgeForUpdateDto>(fridge);
 
-            patchDock.ApplyTo(fridgeToPatch);
+        //        patchDock.ApplyTo(fridgeToPatch);
 
-            TryValidateModel(fridgeToPatch);
+        //        TryValidateModel(fridgeToPatch);
+        //        if (!ModelState.IsValid)
+        //        {
+        //            _logger.LogError("Invalid model state for 'FridgeForUpdate' object");
+        //            return UnprocessableEntity(ModelState);
+        //        }
 
-            if (!ModelState.IsValid)
-            {
-                _logger.LogError("Invalid model state for 'FridgeForUpdate' object");
-                return UnprocessableEntity(ModelState);
-            }
+        //        _mapper.Map(fridgeToPatch, fridge);
 
-            _mapper.Map(fridgeToPatch, fridge);
+        //        await _unitOfWork.SaveAsync();
 
-            await _unitOfWork.SaveAsync();
-
-            return NoContent();
-        }
+        //        return NoContent();
+        //    }
     }
+
 }
