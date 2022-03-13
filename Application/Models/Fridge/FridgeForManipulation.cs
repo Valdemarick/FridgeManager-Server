@@ -7,7 +7,7 @@ namespace Application.Models.Fridge
     public class FridgeForManipulation
     {
         [Required(ErrorMessage = "ModelId is required")]
-        public Guid ModelId { get; set; }
+        public Guid FridgeModelId { get; set; }
 
         [MaxLength(50, ErrorMessage = "Maximum length of OwnerName is 50 characters")]
         public string? OwnerName { get; set; }
