@@ -1,6 +1,6 @@
 ﻿using Domain.Entities;
 
-namespace Application.Common.Interfaces
+namespace Application.Common.Interfaces.Repositories
 {
     public interface IFridgeModelRepository : IGenericRepository<FridgeModel>
     {

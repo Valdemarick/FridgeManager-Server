@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 
-namespace Application.Common.Interfaces
+namespace Application.Common.Interfaces.Contexts
 {
     public interface IApplicationDbContext
     {

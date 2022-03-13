@@ -1,6 +1,7 @@
 ﻿using Application.Models.User;
 using System.Threading.Tasks;
-namespace Application.Common.Interfaces
+
+namespace Application.Common.Interfaces.Managers
 {
     public interface IAuthenticationManager
     {
