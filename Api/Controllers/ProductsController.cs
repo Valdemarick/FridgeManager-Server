@@ -1,12 +1,8 @@
-﻿using Application.Common.Interfaces;
+﻿using Application.Common.Interfaces.Services;
 using Application.Models.Product;
-using AutoMapper;
-using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Api.Controllers
@@ -15,15 +11,11 @@ namespace Api.Controllers
     [ApiController]
     public class ProductsController : ControllerBase
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly ILoggerManager _logger;
-        private readonly IMapper _mapper;
+        private readonly IProductService _productService;
 
-        public ProductsController(IUnitOfWork unitOfWork, ILoggerManager logger, IMapper mapper)
+        public ProductsController(IProductService productService)
         {
-            _unitOfWork = unitOfWork;
-            _logger = logger;
-            _mapper = mapper;
+            _productService = productService;
         }
 
         /// <summary>
@@ -33,10 +25,8 @@ namespace Api.Controllers
         [HttpGet, Authorize]
         public async Task<IActionResult> GetProducts()
         {
-            var products = await _unitOfWork.Product.GetAllAsync();
-            var productDtos = _mapper.Map<List<ProductDto>>(products);
-
-            return Ok(productDtos);
+            var products = await _productService.GetAllProductsAsync();
+            return Ok(products);
         }
 
         /// <summary>
@@ -48,16 +38,8 @@ namespace Api.Controllers
         [ActionName(nameof(GetProductById))]
         public async Task<IActionResult> GetProductById([FromRoute] Guid id)
         {
-            var product = await _unitOfWork.Product.GetByIdReadOnlyAsync(id);
-            if (product == null)
-            {
-                _logger.LogInfo($"А product with id: {id} doesn't exist in the database");
-                return NotFound();
-            }
-
-            var productDto = _mapper.Map<ProductDto>(product);
-
-            return Ok(productDto);
+            var product = await _productService.GetProductbyIdAsync(id);
+            return Ok(product);
         }
 
         /// <summary>
@@ -70,18 +52,23 @@ namespace Api.Controllers
         {
             if (!ModelState.IsValid)
             {
-                _logger.LogError($"Invalid model state for 'ProductForUpdate' object");
                 return UnprocessableEntity(ModelState);
             }
 
-            var product = _mapper.Map<Product>(productDto);
+            var createdProduct = await _productService.CreateProductAsync(productDto);
+            return CreatedAtAction(nameof(GetProductById), new { id = createdProduct.Id }, createdProduct);
+        }
 
-            await _unitOfWork.Product.CreateAsync(product);
-            await _unitOfWork.SaveAsync();
-
-            var productToReturn = _mapper.Map<ProductDto>(product);
-
-            return CreatedAtAction(nameof(GetProductById), new { id = productToReturn.Id }, productToReturn);
+        /// <summary>
+        /// Removes a product by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete("{id}"), Authorize(Roles = "Administrator")]
+        public async Task<IActionResult> DeleteProductById([FromRoute] Guid id)
+        {
+            await _productService.DeleteProductByIdAsync(id);
+            return NoContent();
         }
 
         /// <summary>
@@ -95,78 +82,53 @@ namespace Api.Controllers
         {
             if (!ModelState.IsValid)
             {
-                _logger.LogWarn("Invalid model state for 'ProductForUpdate' object");
                 return UnprocessableEntity(ModelState);
             }
 
-            var product = await _unitOfWork.Product.GetByIdAsync(id);
-            if (product == null)
+            if (id != productForUpdateDto.Id)
             {
-                _logger.LogInfo($"A product with id: {id} doesn't exist in the database");
-                return NotFound();
+                return BadRequest("Incorrect id");
             }
 
-            _mapper.Map(productForUpdateDto, product);
-            await _unitOfWork.SaveAsync();
-
+            await _productService.UpdateProductAsync(productForUpdateDto);
             return NoContent();
         }
-
-        /// <summary>
-        /// Removes a product by id
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        [HttpDelete("{id}"), Authorize(Roles = "Administrator")]
-        public async Task<IActionResult> DeleteProductById([FromRoute] Guid id)
-        {
-            var product = await _unitOfWork.Product.GetByIdReadOnlyAsync(id);
-            if (product == null)
-            {
-                _logger.LogError($"A product with id: {id} doesn't exist in the database");
-                return NotFound();
-            }
-
-            await _unitOfWork.Product.DeleteAsync(product.Id);
-            await _unitOfWork.SaveAsync();
-
-            return NoContent();
-        }
-
+        
+        //unnecessary
         /// <summary>
         /// Updates a product partially by id
         /// </summary>
         /// <param name="id"></param>
         /// <param name="patchDock"></param>
         /// <returns></returns>
-        [HttpPatch("{id}"), Authorize(Roles = "Administrator")]
-        public async Task<IActionResult> UpdateProductPartiallyById([FromRoute] Guid id,
-                                                                    [FromBody] JsonPatchDocument<ProductForUpdateDto> patchDock)
-        {
-            var product = await _unitOfWork.Product.GetByIdAsync(id);
-            if (product == null)
-            {
-                _logger.LogInfo($"A product with id: {id} doesn't exist in the database");
-                return NotFound();
-            }
+        //[HttpPatch("{id}"), Authorize(Roles = "Administrator")]
+        //public async Task<IActionResult> UpdateProductPartiallyById([FromRoute] Guid id,
+        //                                                            [FromBody] JsonPatchDocument<ProductForUpdateDto> patchDock)
+        //{
+        //    var product = await _unitOfWork.Product.GetByIdAsync(id);
+        //    if (product == null)
+        //    {
+        //        _logger.LogInfo($"A product with id: {id} doesn't exist in the database");
+        //        return NotFound();
+        //    }
 
-            var productToPatch = _mapper.Map<ProductForUpdateDto>(product);
+        //    var productToPatch = _mapper.Map<ProductForUpdateDto>(product);
 
-            patchDock.ApplyTo(productToPatch);
+        //    patchDock.ApplyTo(productToPatch);
 
-            TryValidateModel(productToPatch);
+        //    TryValidateModel(productToPatch);
 
-            if (!ModelState.IsValid)
-            {
-                _logger.LogWarn("Invalid model state for 'JsonPatchDocument<ProductForUpdateDto>' object");
-                return UnprocessableEntity(ModelState);
-            }
+        //    if (!ModelState.IsValid)
+        //    {
+        //        _logger.LogWarn("Invalid model state for 'JsonPatchDocument<ProductForUpdateDto>' object");
+        //        return UnprocessableEntity(ModelState);
+        //    }
 
-            _mapper.Map(productToPatch, product);
+        //    _mapper.Map(productToPatch, product);
 
-            await _unitOfWork.SaveAsync();
+        //    await _unitOfWork.SaveAsync();
 
-            return NoContent();
-        }
+        //    return NoContent();
+        //}
     }
 }
