@@ -61,7 +61,7 @@ namespace Api.Controllers
             }
 
             var createdFridge = await _fridgeService.CreateFridgeAsync(fridgeForCreationDto);
-            return RedirectToAction(nameof(GetFridgeById), new { id = createdFridge.Id });
+            return CreatedAtAction(nameof(GetFridgeById), new { id = createdFridge.Id });
         }
 
         /// <summary>
@@ -95,10 +95,11 @@ namespace Api.Controllers
                 return BadRequest("Incorrect id");
             }
 
-            await _fridgeService.UpdateFridgeById(fridgeForUpdateDto);
+            await _fridgeService.UpdateFridgeByIdAsync(fridgeForUpdateDto);
             return NoContent();
         }
 
+        //unnecessary
         //    /// <summary>
         //    /// Update a fridge patrially by id
         //    /// </summary>
@@ -134,5 +135,4 @@ namespace Api.Controllers
         //        return NoContent();
         //    }
     }
-
 }

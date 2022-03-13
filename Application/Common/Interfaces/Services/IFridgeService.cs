@@ -11,6 +11,6 @@ namespace Application.Common.Interfaces.Services
         Task<FridgeDto> GetFridgeByIdAsync(Guid id);
         Task<FridgeDto> CreateFridgeAsync(FridgeForCreationDto fridgeForCreationDto);
         Task DeleteFridgeByIdAsync(Guid id);
-        Task UpdateFridgeById(FridgeForUpdateDto fridgeForUpdateDto);
+        Task UpdateFridgeByIdAsync(FridgeForUpdateDto fridgeForUpdateDto);
     }
 }
