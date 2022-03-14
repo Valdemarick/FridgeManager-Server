@@ -1,15 +1,15 @@
 ﻿using System.ComponentModel.DataAnnotations;
-#nullable enable
 
 namespace Application.Models.Product
 {
     public class ProductForManipulation
     {
-        [Required(ErrorMessage = "'Name' property is a required field")]
-        [MaxLength(30, ErrorMessage = "Maximum length for 'Name' property is 30 characters")]
-        public string Name { get; set; } = null!;
+        [Required(ErrorMessage = "Name is required")]
+        [MaxLength(30, ErrorMessage = "Maximum length of Name is 30 characters")]
+        public string Name { get; set; } 
 
-        [Range(0, 10, ErrorMessage = "'Quantity' property can't be less than 0 and more than 10'")]
+        [Required(ErrorMessage = "Quantity is required")]
+        [Range(1, 9, ErrorMessage = "Quantity can't be less than 1 and more than 9")]
         public int Quantity { get; set; }
     }
 }
