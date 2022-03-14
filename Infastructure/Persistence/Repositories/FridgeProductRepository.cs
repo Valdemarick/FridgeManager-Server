@@ -27,23 +27,22 @@ namespace Infastructure.Persistence.Repositories
             .Where(fp => fp.FridgeId.Equals(fridgeId) && fp.ProductId.Equals(productId))
             .Include(fp => fp.Product)
             .AsNoTracking()
-            .SingleOrDefaultAsync();
+            .FirstOrDefaultAsync();
 
         public async Task DeleteByIdsAsync(Guid fridgeId, Guid productId)
         {
             var existing = await appContext.Set<FridgeProduct>().FindAsync(fridgeId, productId);
-
             if (existing == null)
             {
-                logger.LogInfo($"The cover doesn't exist in the database");
-                return;
-                //return NotFound();
+                throw new ArgumentException($"A record with fridgeId: {fridgeId} and productId: {productId}" +
+                    $"doesn't exist in the database");
             }
 
             appContext.Set<FridgeProduct>().Remove(existing);
+            await appContext.SaveChangesAsync();
         }
 
-        public async Task<List<FridgeProduct>> FindRecordWhereProductQuantityIsZero()
+        public async Task<List<FridgeProduct>> FindRecorsdWhereProductQuantityIsZero()
         {
             var parameteres = new SqlParameter[]
             {
