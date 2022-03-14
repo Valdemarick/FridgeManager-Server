@@ -32,6 +32,7 @@ namespace Api
             services.ConfigureLoggerService();
             services.ConfigureSqlContext(Configuration);
             services.ConfigureRepositoryManager();
+            services.ConfigureServices();
             services.ConfigureApplicationContext();
             services.AddAuthentication();
             services.ConfigureIdentity();

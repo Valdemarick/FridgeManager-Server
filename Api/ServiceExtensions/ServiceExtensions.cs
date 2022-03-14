@@ -1,8 +1,9 @@
 ﻿using Application.Common.Interfaces.Contexts;
 using Application.Common.Interfaces.Managers;
+using Application.Common.Interfaces.Services;
 using Application.Models.User;
+using Infastructure.Managers;
 using Infastructure.Persistence.Contexts;
-using Infastructure.Persistence.Repositories;
 using Infastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -86,5 +87,13 @@ namespace Api.ServiceExtensions
 
         public static void ConfigureAuthenticationManager(this IServiceCollection services) =>
             services.AddScoped<IAuthenticationManager, AuthenticationManager>();
+
+        public static void ConfigureServices(this IServiceCollection services)
+        {
+            services.AddScoped<IFridgeService, FridgeService>();
+            services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<IFridgeProductService, FridgeProductService>();
+            services.AddScoped<IFridgeModelService, FridgeModelService>();
+        }
     }
 }
