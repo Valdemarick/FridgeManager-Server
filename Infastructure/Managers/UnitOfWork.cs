@@ -1,9 +1,10 @@
 ﻿using Application.Common.Interfaces.Contexts;
 using Application.Common.Interfaces.Managers;
 using Application.Common.Interfaces.Repositories;
+using Infastructure.Persistence.Repositories;
 using System.Threading.Tasks;
 
-namespace Infastructure.Persistence.Repositories
+namespace Infastructure.Managers
 {
     public class UnitOfWork : IUnitOfWork
     {

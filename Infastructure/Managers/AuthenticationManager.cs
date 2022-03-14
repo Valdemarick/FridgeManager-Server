@@ -10,7 +10,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Infastructure.Services
+namespace Infastructure.Managers
 {
     public class AuthenticationManager : IAuthenticationManager
     {

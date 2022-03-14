@@ -1,18 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Application.Common.Interfaces;
+﻿using Application.Common.Interfaces.Managers;
+using Application.Common.Interfaces.Services;
 using Application.Models.Fridge;
 using AutoMapper;
 using Domain.Entities;
-using Microsoft.AspNetCore.JsonPatch;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Infastructure.Services
 {
     public class FridgeService : IFridgeService
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
+        private IUnitOfWork _unitOfWork;
+        private IMapper _mapper;
 
         public FridgeService(IUnitOfWork unitOfWork, IMapper mapper)
         {
@@ -20,42 +20,37 @@ namespace Infastructure.Services
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<FridgeDto>> GetAllAsync()
-        {
-            var fridges = await _unitOfWork.Fridge.GetAllAsync();
-            return _mapper.Map<List<FridgeDto>>(fridges);
-        }
+        public async Task<List<FridgeDto>> GetAllFridgesAsync() =>
+            _mapper.Map<List<FridgeDto>>(await _unitOfWork.Fridge.GetAllAsync());
 
-        public async Task<FridgeDto> GetByIdAsync(Guid id)
-        {
-            var fridge = await _unitOfWork.Fridge.GetByIdAsync(id);
-            return _mapper.Map<FridgeDto>(fridge);
-        }
+        public async Task<FridgeDto> GetFridgeByIdAsync(Guid id) =>
+            _mapper.Map<FridgeDto>(await _unitOfWork.Fridge.GetByIdReadOnlyAsync(id));
 
-
-        public async Task<FridgeDto> AddAsync(FridgeForCreationDto fridgeForCreationDto)
+        public async Task<FridgeDto> CreateFridgeAsync(FridgeForCreationDto fridgeForCreationDto)
         {
+            if (fridgeForCreationDto == null)
+            {
+                throw new ArgumentNullException(nameof(FridgeForCreationDto));
+            }
+
             var fridge = _mapper.Map<Fridge>(fridgeForCreationDto);
             await _unitOfWork.Fridge.CreateAsync(fridge);
+
             return _mapper.Map<FridgeDto>(fridge);
         }
 
-        public async Task DeleteAsync(Guid id)
-        {
+        public async Task DeleteFridgeByIdAsync(Guid id) =>
             await _unitOfWork.Fridge.DeleteAsync(id);
-        }
 
-        public async Task UpdateFullyAsync(FridgeForUpdateDto fridgeForUpdateDto)
+        public async Task UpdateFridgeByIdAsync(FridgeForUpdateDto fridgeForUpdateDto)
         {
+            if (fridgeForUpdateDto == null)
+            {
+                throw new ArgumentNullException(nameof(FridgeForUpdateDto));
+            }
+
             var fridge = _mapper.Map<Fridge>(fridgeForUpdateDto);
             await _unitOfWork.Fridge.UpdateAsync(fridge);
         }
-
-        public async Task UpdatePartially(JsonPatchDocument<FridgeForUpdateDto> patchDock)
-        {
-
-        }
-
-        public async Task SaveAsync() => await _unitOfWork.SaveAsync();
     }
 }

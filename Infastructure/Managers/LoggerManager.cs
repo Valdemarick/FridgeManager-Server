@@ -1,7 +1,7 @@
 ﻿using Application.Common.Interfaces.Managers;
 using NLog;
 
-namespace Infastructure.Services
+namespace Infastructure.Managers
 {
     public class LoggerManager : ILoggerManager
     {

@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Infastructure.Persistence.Services
+namespace Infastructure.Services
 {
     public class ProductService : IProductService
     {
