@@ -1,9 +1,6 @@
-﻿using Application.Common.Interfaces;
-using Application.Models.FridgeModel;
-using AutoMapper;
+﻿using Application.Common.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Api.Controllers
@@ -12,22 +9,18 @@ namespace Api.Controllers
     [ApiController]
     public class FridgeModelsController : ControllerBase
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
+        private readonly IFridgeModelService _fridgeModelService;
 
-        public FridgeModelsController(IUnitOfWork unitOfWork, IMapper mapper)
+        public FridgeModelsController(IFridgeModelService fridgeModelService)
         {
-            _unitOfWork = unitOfWork;
-            _mapper = mapper;
+            _fridgeModelService = fridgeModelService;
         }
 
         [HttpGet, Authorize]
         public async Task<IActionResult> GetModelsAsync()
         {
-            var models = await _unitOfWork.FridgeModel.GetAllAsync();
-            var modelsDtos = _mapper.Map<List<FridgeModelDto>>(models);
-
-            return Ok(modelsDtos);
+            var models = await _fridgeModelService.GetAllModelsAsync();
+            return Ok(models);
         }
     }
 }
