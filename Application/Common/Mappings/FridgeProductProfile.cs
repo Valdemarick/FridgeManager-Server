@@ -15,7 +15,7 @@ namespace Application.Common.Mappings
                 .ForMember(dest => dest.ProductCount,
                 opt => opt.MapFrom(src => src.ProductQuantity)).ReverseMap();
 
-            CreateMap<FridgeProductForCreationDto, FridgeProduct>();
+            CreateMap<FridgeProductForCreationDto, FridgeProduct>().ReverseMap();
         }
     }
 }
