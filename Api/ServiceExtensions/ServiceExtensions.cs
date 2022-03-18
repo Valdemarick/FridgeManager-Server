@@ -94,6 +94,7 @@ namespace Api.ServiceExtensions
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IFridgeProductService, FridgeProductService>();
             services.AddScoped<IFridgeModelService, FridgeModelService>();
+            services.AddScoped<IAuthenticationService, AuthenticationService>();
         }
     }
 }
