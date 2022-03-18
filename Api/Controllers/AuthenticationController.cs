@@ -1,7 +1,5 @@
-﻿using Application.Common.Interfaces;
+﻿using Application.Common.Interfaces.Services;
 using Application.Models.User;
-using AutoMapper;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
@@ -11,18 +9,11 @@ namespace Api.Controllers
     [ApiController]
     public class AuthenticationController : ControllerBase
     {
-        private readonly ILoggerManager _logger;
-        private readonly IMapper _mapper;
-        private readonly UserManager<User> _userManager;
-        private readonly IAuthenticationManager _authenticationManager;
+        private readonly IAuthenticationService _authenticationService;
 
-        public AuthenticationController(ILoggerManager logger, IMapper mapper, UserManager<User> userManager,
-            IAuthenticationManager authenticationManager)
+        public AuthenticationController(IAuthenticationService authenticationService)
         {
-            _logger = logger;
-            _mapper = mapper;
-            _userManager = userManager;
-            _authenticationManager = authenticationManager;
+            _authenticationService = authenticationService;
         }
 
         /// <summary>
@@ -35,28 +26,15 @@ namespace Api.Controllers
         {
             if (!ModelState.IsValid)
             {
-                _logger.LogWarn("Invalid model state for 'UserForRegistrationDto' object");
                 return UnprocessableEntity(ModelState);
             }
 
-            var user = _mapper.Map<User>(userForRegistrationDto);
-
-            var result = await _userManager.CreateAsync(user, userForRegistrationDto.Password);
-            if (!result.Succeeded)
-            {
-                foreach (var error in result.Errors)
-                    ModelState.TryAddModelError(error.Code, error.Description);
-
-                return BadRequest(ModelState);
-            }
-
-            await _userManager.AddToRolesAsync(user, userForRegistrationDto.Roles);
-
+            await _authenticationService.SignUpAsync(userForRegistrationDto);
             return StatusCode(201);
         }
 
         /// <summary>
-        /// Authentication. Returns a new JWT 
+        /// Authentication. If the authentication is successful, it will return a new JWT 
         /// </summary>
         /// <param name="userForAuthenticationDto"></param>
         /// <returns></returns>
@@ -65,17 +43,11 @@ namespace Api.Controllers
         {
             if (!ModelState.IsValid)
             {
-                _logger.LogWarn("Invalid model state for 'UserForAuthenticationDto' object");
                 return UnprocessableEntity(ModelState);
             }
 
-            if (!await _authenticationManager.ValidateUser(userForAuthenticationDto))
-            {
-                _logger.LogWarn($"{nameof(Authenticate)}: Authentication failed. Something wrong");
-                return Unauthorized();
-            }
-
-            return Ok(new { Token = await _authenticationManager.CreateToken() });
+            var token = await _authenticationService.SignInAsync(userForAuthenticationDto);
+            return Ok(new { Token = token });
         }
     }
 }
