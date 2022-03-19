@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Contexts;
+﻿using Application.Common.Exceptions;
+using Application.Common.Interfaces.Contexts;
 using Application.Common.Interfaces.Managers;
 using Application.Common.Interfaces.Repositories;
 using Domain.Entities;
@@ -16,30 +17,30 @@ namespace Infastructure.Persistence.Repositories
         public FridgeProductRepository(IApplicationDbContext context, ILoggerManager logger) : base(context, logger) { }
 
         public async Task<List<FridgeProduct>> GetFridgeProductByFridgeIdAsync(Guid fridgeId) =>
-            await appContext.Set<FridgeProduct>()
-            .Where(fp => fp.FridgeId.Equals(fridgeId))
+            await AppContext.Set<FridgeProduct>()
+            .Where(fp => fp.FridgeId == fridgeId)
             .Include(fp => fp.Product)
             .AsNoTracking()
             .ToListAsync();
 
         public async Task<FridgeProduct> GetFridgeProductByIdsAsync(Guid fridgeId, Guid productId) =>
-            await appContext.Set<FridgeProduct>()
-            .Where(fp => fp.FridgeId.Equals(fridgeId) && fp.ProductId.Equals(productId))
+            await AppContext.Set<FridgeProduct>()
+            .Where(fp => fp.FridgeId == fridgeId && fp.ProductId == productId)
             .Include(fp => fp.Product)
             .AsNoTracking()
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync() ?? throw new NotFoundException($"A record with fridge id: {fridgeId} and product id: {productId} not found");
 
         public async Task DeleteByIdsAsync(Guid fridgeId, Guid productId)
         {
-            var existing = await appContext.Set<FridgeProduct>().FindAsync(fridgeId, productId);
+            var existing = await AppContext.Set<FridgeProduct>().FindAsync(fridgeId, productId);
             if (existing == null)
             {
-                throw new ArgumentException($"A record with fridgeId: {fridgeId} and productId: {productId}" +
+                throw new NotFoundException($"A record with fridgeId: {fridgeId} and productId: {productId}" +
                     $"doesn't exist in the database");
             }
 
-            appContext.Set<FridgeProduct>().Remove(existing);
-            await appContext.SaveChangesAsync();
+            AppContext.Set<FridgeProduct>().Remove(existing);
+            await AppContext.SaveChangesAsync();
         }
 
         public async Task<List<FridgeProduct>> FindRecorsdWhereProductQuantityIsZero()
@@ -66,7 +67,7 @@ namespace Infastructure.Persistence.Repositories
                 },
             };
 
-            var record = await appContext.FridgeProducts
+            var record = await AppContext.FridgeProducts
                 .FromSqlRaw("FindEmptyProducts @FridgeId OUT, @ProductId OUT, @ProductCount OUT", parameteres)
                 .ToListAsync();
 

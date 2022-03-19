@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Contexts;
+﻿using Application.Common.Exceptions;
+using Application.Common.Interfaces.Contexts;
 using Application.Common.Interfaces.Managers;
 using Application.Common.Interfaces.Repositories;
 using Domain.Common;
@@ -12,29 +13,29 @@ namespace Infastructure.Persistence.Repositories
 {
     public abstract class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEntity : BaseEntity
     {
-        protected readonly IApplicationDbContext appContext;
-        protected readonly ILoggerManager logger;
+        protected readonly IApplicationDbContext AppContext;
+        protected readonly ILoggerManager Logger;
 
         public GenericRepository(IApplicationDbContext applicationContext, ILoggerManager logger)
         {
-            appContext = applicationContext;
-            this.logger = logger;
+            AppContext = applicationContext;
+            Logger = logger;
         }
 
         public virtual async Task<List<TEntity>> GetAllAsync() =>
-            await appContext.Set<TEntity>()
+            await AppContext.Set<TEntity>()
             .ToListAsync();
 
         public virtual async Task<TEntity> GetByIdAsync(Guid id) =>
-            await appContext.Set<TEntity>()
+            await AppContext.Set<TEntity>()
             .Where(entity => entity.Id == id)
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync() ?? throw new NotFoundException($"An entity of {typeof(TEntity)} type with id: {id} not found");
 
         public virtual async Task<TEntity> GetByIdReadOnlyAsync(Guid id) =>
-            await appContext.Set<TEntity>()
-            .Where(p => p.Id.Equals(id))
+            await AppContext.Set<TEntity>()
+            .Where(p => p.Id == id)
             .AsNoTracking()
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync() ?? throw new NotFoundException($"An entity of {typeof(TEntity)} type with id: {id} not found");
 
         public virtual async Task<TEntity> CreateAsync(TEntity entity)
         {
@@ -43,34 +44,34 @@ namespace Infastructure.Persistence.Repositories
                 throw new ArgumentNullException(nameof(TEntity));
             }
 
-            await appContext.Set<TEntity>().AddAsync(entity);
-            await appContext.SaveChangesAsync();
+            await AppContext.Set<TEntity>().AddAsync(entity);
+            await AppContext.SaveChangesAsync();
 
             return entity;
         }
 
         public virtual async Task DeleteAsync(Guid id)
         {
-            var existing = await appContext.Set<TEntity>().FindAsync(id);
+            var existing = await AppContext.Set<TEntity>().FindAsync(id);
             if (existing == null)
             {
-                throw new ArgumentException($"A fridge with id: {id} doesn't exist in the database");
+                throw new NotFoundException($"A fridge with id: {id} doesn't exist in the database");
             }
 
-            appContext.Set<TEntity>().Remove(existing);
-            await appContext.SaveChangesAsync();
+            AppContext.Set<TEntity>().Remove(existing);
+            await AppContext.SaveChangesAsync();
         }
 
         public virtual async Task UpdateAsync(TEntity entity)
         {
-            var isExists = await appContext.Set<TEntity>().AnyAsync(e => e.Id.Equals(entity.Id));
+            bool isExists = await AppContext.Set<TEntity>().AnyAsync(e => e.Id == entity.Id);
             if (!isExists)
             {
-                throw new ArgumentException($"A fridge with id:{entity.Id} doesn't exist in the database");
+                throw new NotFoundException($"A fridge with id:{entity.Id} doesn't exist in the database");
             }
 
-            appContext.Set<TEntity>().Update(entity);
-            await appContext.SaveChangesAsync();
+            AppContext.Set<TEntity>().Update(entity);
+            await AppContext.SaveChangesAsync();
         }
     }
 }
