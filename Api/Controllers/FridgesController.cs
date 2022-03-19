@@ -23,7 +23,7 @@ namespace Api.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet, Authorize]
-        public async Task<IActionResult> GetFridges()
+        public async Task<IActionResult> GetFridgesAsync()
         {
             var fridges = await _fridgeService.GetAllFridgesAsync();
             return Ok(fridges);
@@ -35,8 +35,8 @@ namespace Api.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}"), Authorize]
-        [ActionName(nameof(GetFridgeById))]
-        public async Task<IActionResult> GetFridgeById([FromRoute] Guid id)
+        [ActionName(nameof(GetFridgeByIdAsync))]
+        public async Task<IActionResult> GetFridgeByIdAsync([FromRoute] Guid id)
         {
             var fridge = await _fridgeService.GetFridgeByIdAsync(id);
             if (fridge == null)
@@ -53,7 +53,7 @@ namespace Api.Controllers
         /// <param name="fridgeForCreationDto"></param>
         /// <returns></returns>
         [HttpPost, Authorize]
-        public async Task<IActionResult> CreateFridge([FromBody] FridgeForCreationDto fridgeForCreationDto)
+        public async Task<IActionResult> CreateFridgeAsync([FromBody] FridgeForCreationDto fridgeForCreationDto)
         {
             if (!ModelState.IsValid)
             {
@@ -61,7 +61,7 @@ namespace Api.Controllers
             }
 
             var createdFridge = await _fridgeService.CreateFridgeAsync(fridgeForCreationDto);
-            return CreatedAtAction(nameof(GetFridgeById), new { id = createdFridge.Id });
+            return CreatedAtAction(nameof(GetFridgeByIdAsync), new { id = createdFridge.Id }, createdFridge);
         }
 
         /// <summary>
@@ -77,13 +77,13 @@ namespace Api.Controllers
         }
 
         /// <summary>
-        /// Update a fridge fully by id
+        /// Update a fridge 
         /// </summary>
         /// <param name="id"></param>
         /// <param name="fridgeForUpdateDto"></param>
         /// <returns></returns>
         [HttpPut("{id}"), Authorize(Roles = "Administrator")]
-        public async Task<IActionResult> UpdateFridgeFullyById([FromRoute] Guid id, [FromBody] FridgeForUpdateDto fridgeForUpdateDto)
+        public async Task<IActionResult> UpdateFridgeAsync([FromRoute] Guid id, [FromBody] FridgeForUpdateDto fridgeForUpdateDto)
         {
             if (!ModelState.IsValid)
             {
@@ -95,7 +95,7 @@ namespace Api.Controllers
                 return BadRequest("Incorrect id");
             }
 
-            await _fridgeService.UpdateFridgeByIdAsync(fridgeForUpdateDto);
+            await _fridgeService.UpdateFridgeAsync(fridgeForUpdateDto);
             return NoContent();
         }
 

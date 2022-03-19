@@ -42,7 +42,7 @@ namespace Infastructure.Services
         public async Task DeleteFridgeByIdAsync(Guid id) =>
             await _unitOfWork.Fridge.DeleteAsync(id);
 
-        public async Task UpdateFridgeByIdAsync(FridgeForUpdateDto fridgeForUpdateDto)
+        public async Task UpdateFridgeAsync(FridgeForUpdateDto fridgeForUpdateDto)
         {
             if (fridgeForUpdateDto == null)
             {
