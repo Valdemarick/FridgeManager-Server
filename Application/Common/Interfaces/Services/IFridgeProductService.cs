@@ -9,8 +9,8 @@ namespace Application.Common.Interfaces.Services
     public interface IFridgeProductService
     {
         Task<FridgeProductDto> GetFridgeProductByIdsAsync(Guid fridgeId, Guid productId);
-        Task<IEnumerable<FridgeProductDto>> GetProductsByFridgeIdAsync(Guid fridgeId);
-        Task<IEnumerable<FridgeProductDto>> CreateAsync(IEnumerable<FridgeProductForCreationDto> fridgeProductForCreationDtos);
+        Task<List<FridgeProductDto>> GetProductsByFridgeIdAsync(Guid fridgeId);
+        Task<List<FridgeProductDto>> CreateAsync(List<FridgeProductForCreationDto> fridgeProductForCreationDtos);
         Task DeleteFridgeProductByIdsAsync(Guid fridgeId, Guid productId);
         Task AddProductWhereEmpty();
     }

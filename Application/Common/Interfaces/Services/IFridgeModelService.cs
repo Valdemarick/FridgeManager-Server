@@ -6,6 +6,6 @@ namespace Application.Common.Interfaces.Services
 {
     public interface IFridgeModelService
     {
-        Task<IEnumerable<FridgeModelDto>> GetAllModelsAsync();
+        Task<List<FridgeModelDto>> GetAllModelsAsync();
     }
 }

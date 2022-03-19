@@ -18,7 +18,7 @@ namespace Infastructure.Services
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<FridgeModelDto>> GetAllModelsAsync() =>
-             _mapper.Map<IEnumerable<FridgeModelDto>>(await _unitOfWork.FridgeModel.GetAllAsync());
+        public async Task<List<FridgeModelDto>> GetAllModelsAsync() =>
+             _mapper.Map<List<FridgeModelDto>>(await _unitOfWork.FridgeModel.GetAllAsync());
     }
 }

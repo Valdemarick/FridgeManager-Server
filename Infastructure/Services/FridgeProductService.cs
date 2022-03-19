@@ -28,13 +28,13 @@ namespace Infastructure.Services
             return _mapper.Map<FridgeProductDto>(fridgeProduct);
         }
 
-        public async Task<IEnumerable<FridgeProductDto>> GetProductsByFridgeIdAsync(Guid fridgeId)
+        public async Task<List<FridgeProductDto>> GetProductsByFridgeIdAsync(Guid fridgeId)
         {
             var fridgeProducts = await _unitOfWork.FridgeProduct.GetFridgeProductByFridgeIdAsync(fridgeId);
-            return _mapper.Map<IEnumerable<FridgeProductDto>>(fridgeProducts);
+            return _mapper.Map<List<FridgeProductDto>>(fridgeProducts);
         }
 
-        public async Task<IEnumerable<FridgeProductDto>> CreateAsync(IEnumerable<FridgeProductForCreationDto> fridgeProductForCreationDtos)
+        public async Task<List<FridgeProductDto>> CreateAsync(List<FridgeProductForCreationDto> fridgeProductForCreationDtos)
             {
             if (fridgeProductForCreationDtos == null)
             {
