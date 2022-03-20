@@ -23,7 +23,7 @@ namespace Api.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet, Authorize]
-        public async Task<IActionResult> GetProducts()
+        public async Task<IActionResult> GetProductsAsync()
         {
             var products = await _productService.GetAllProductsAsync();
             return Ok(products);
@@ -35,10 +35,10 @@ namespace Api.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}"), Authorize]
-        [ActionName(nameof(GetProductById))]
-        public async Task<IActionResult> GetProductById([FromRoute] Guid id)
+        [ActionName(nameof(GetProductByIdAsync))]
+        public async Task<IActionResult> GetProductByIdAsync([FromRoute] Guid id)
         {
-            var product = await _productService.GetProductbyIdAsync(id);
+            var product = await _productService.GetProductByIdAsync(id);
             return Ok(product);
         }
 
@@ -48,7 +48,7 @@ namespace Api.Controllers
         /// <param name="productDto"></param>
         /// <returns></returns>
         [HttpPost, Authorize]
-        public async Task<IActionResult> CreateProduct([FromBody] ProductForCreationDto productDto)
+        public async Task<IActionResult> CreateProductAsync([FromBody] ProductForCreationDto productDto)
         {
             if (!ModelState.IsValid)
             {
@@ -56,7 +56,7 @@ namespace Api.Controllers
             }
 
             var createdProduct = await _productService.CreateProductAsync(productDto);
-            return CreatedAtAction(nameof(GetProductById), new { id = createdProduct.Id }, createdProduct);
+            return CreatedAtAction(nameof(GetProductByIdAsync), new { id = createdProduct.Id }, createdProduct);
         }
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace Api.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpDelete("{id}"), Authorize(Roles = "Administrator")]
-        public async Task<IActionResult> DeleteProductById([FromRoute] Guid id)
+        public async Task<IActionResult> DeleteProductByIdAsync([FromRoute] Guid id)
         {
             await _productService.DeleteProductByIdAsync(id);
             return NoContent();
@@ -78,7 +78,7 @@ namespace Api.Controllers
         /// <param name="productForUpdateDto"></param>
         /// <returns></returns>
         [HttpPut("{id}"), Authorize(Roles = "Administrator")]
-        public async Task<IActionResult> UpdateProductFullyById([FromRoute] Guid id, [FromBody] ProductForUpdateDto productForUpdateDto)
+        public async Task<IActionResult> UpdateProductByIdAsync([FromRoute] Guid id, [FromBody] ProductForUpdateDto productForUpdateDto)
         {
             if (!ModelState.IsValid)
             {

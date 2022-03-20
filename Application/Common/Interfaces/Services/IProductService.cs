@@ -8,7 +8,7 @@ namespace Application.Common.Interfaces.Services
     public interface IProductService
     {
         Task<List<ProductDto>> GetAllProductsAsync();
-        Task<ProductDto> GetProductbyIdAsync(Guid id);
+        Task<ProductDto> GetProductByIdAsync(Guid id);
         Task<ProductDto> CreateProductAsync(ProductForCreationDto productForCreationDto);
         Task DeleteProductByIdAsync(Guid id);
         Task UpdateProductAsync(ProductForUpdateDto productForUpdateDto);

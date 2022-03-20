@@ -23,7 +23,7 @@ namespace Infastructure.Services
         public async Task<List<ProductDto>> GetAllProductsAsync() =>
             _mapper.Map<List<ProductDto>>(await _unitOfWork.Product.GetAllAsync());
 
-        public async Task<ProductDto> GetProductbyIdAsync(Guid id) =>
+        public async Task<ProductDto> GetProductByIdAsync(Guid id) =>
             _mapper.Map<ProductDto>(await _unitOfWork.Product.GetByIdReadOnlyAsync(id));
 
         public async Task<ProductDto> CreateProductAsync(ProductForCreationDto productForCreationDto)
