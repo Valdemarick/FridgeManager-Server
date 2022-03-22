@@ -28,7 +28,7 @@ namespace Infastructure.Persistence.Repositories
             .Where(fp => fp.FridgeId == fridgeId && fp.ProductId == productId)
             .Include(fp => fp.Product)
             .AsNoTracking()
-            .FirstOrDefaultAsync() ?? throw new NotFoundException($"A record with fridge id: {fridgeId} and product id: {productId} not found");
+            .FirstOrDefaultAsync();
 
         public async Task DeleteByIdsAsync(Guid fridgeId, Guid productId)
         {

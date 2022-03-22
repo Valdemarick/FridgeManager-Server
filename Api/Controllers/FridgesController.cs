@@ -98,41 +98,5 @@ namespace Api.Controllers
             await _fridgeService.UpdateFridgeAsync(fridgeForUpdateDto);
             return NoContent();
         }
-
-        //unnecessary
-        //    /// <summary>
-        //    /// Update a fridge patrially by id
-        //    /// </summary>
-        //    /// <param name="id"></param>
-        //    /// <param name="patchDock"></param>
-        //    /// <returns></returns>
-        //    [HttpPatch("{id}"), Authorize(Roles = "Administrator")]
-        //    public async Task<IActionResult> UpdateFridgePartiallyById([FromRoute] Guid id,
-        //                                                               [FromBody] JsonPatchDocument<FridgeForUpdateDto> patchDock)
-        //    {
-        //        var fridge = await _unitOfWork.Fridge.GetByIdAsync(id);
-        //        if (fridge == null)
-        //        {
-        //            _logger.LogWarn($"A fridge with id: {id} doesn't exist in the database");
-        //            return NotFound();
-        //        }
-
-        //        var fridgeToPatch = _mapper.Map<FridgeForUpdateDto>(fridge);
-
-        //        patchDock.ApplyTo(fridgeToPatch);
-
-        //        TryValidateModel(fridgeToPatch);
-        //        if (!ModelState.IsValid)
-        //        {
-        //            _logger.LogError("Invalid model state for 'FridgeForUpdate' object");
-        //            return UnprocessableEntity(ModelState);
-        //        }
-
-        //        _mapper.Map(fridgeToPatch, fridge);
-
-        //        await _unitOfWork.SaveAsync();
-
-        //        return NoContent();
-        //    }
     }
 }

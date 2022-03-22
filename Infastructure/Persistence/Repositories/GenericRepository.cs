@@ -29,13 +29,13 @@ namespace Infastructure.Persistence.Repositories
         public virtual async Task<TEntity> GetByIdAsync(Guid id) =>
             await AppContext.Set<TEntity>()
             .Where(entity => entity.Id == id)
-            .FirstOrDefaultAsync() ?? throw new NotFoundException($"An entity of {typeof(TEntity)} type with id: {id} not found");
+            .FirstOrDefaultAsync();
 
         public virtual async Task<TEntity> GetByIdReadOnlyAsync(Guid id) =>
             await AppContext.Set<TEntity>()
             .Where(p => p.Id == id)
             .AsNoTracking()
-            .FirstOrDefaultAsync() ?? throw new NotFoundException($"An entity of {typeof(TEntity)} type with id: {id} not found");
+            .FirstOrDefaultAsync();
 
         public virtual async Task<TEntity> CreateAsync(TEntity entity)
         {

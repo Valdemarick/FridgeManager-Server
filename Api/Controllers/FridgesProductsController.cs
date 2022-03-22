@@ -38,10 +38,15 @@ namespace Api.Controllers
         /// <param name="productId"></param>
         /// <returns></returns>
         [HttpGet("fridge/{fridgeId}/product/{productId}"), Authorize]
-        [ActionName(nameof(GetFridgeProductbyIds))]
-        public async Task<IActionResult> GetFridgeProductbyIds([FromRoute] Guid fridgeId, Guid productId)
+        [ActionName(nameof(GetFridgeProductByIds))]
+        public async Task<IActionResult> GetFridgeProductByIds([FromRoute] Guid fridgeId, Guid productId)
         {
             var fridgeProduct = await _fridgeProductService.GetFridgeProductByIdsAsync(fridgeId, productId);
+            if (fridgeProduct == null)
+            {
+                return NotFound();
+            }
+
             return Ok(fridgeProduct);
         }
 
@@ -51,7 +56,7 @@ namespace Api.Controllers
         /// <param name="fridgeProductForCreationDtos"></param>
         /// <returns></returns>
         [HttpPost, Authorize]
-        public async Task<IActionResult> AddProductIntoFridge([FromBody] IEnumerable<FridgeProductForCreationDto> fridgeProductForCreationDtos)
+        public async Task<IActionResult> AddProductIntoFridge([FromBody] List<FridgeProductForCreationDto> fridgeProductForCreationDtos)
         {
             if (!ModelState.IsValid)
             {

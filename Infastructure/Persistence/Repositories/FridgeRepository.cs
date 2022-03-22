@@ -1,5 +1,4 @@
-﻿using Application.Common.Exceptions;
-using Application.Common.Interfaces.Contexts;
+﻿using Application.Common.Interfaces.Contexts;
 using Application.Common.Interfaces.Managers;
 using Application.Common.Interfaces.Repositories;
 using Domain.Entities;
@@ -23,12 +22,12 @@ namespace Infastructure.Persistence.Repositories
         public override async Task<Fridge> GetByIdAsync(Guid id) =>
              await AppContext.Set<Fridge>()
              .Include(f => f.FridgeModel)
-             .FirstOrDefaultAsync(f => f.Id == id) ?? throw new NotFoundException($"A fridge with id: {id} not found");
+             .FirstOrDefaultAsync(f => f.Id == id);
 
         public override async Task<Fridge> GetByIdReadOnlyAsync(Guid id) =>
              await AppContext.Set<Fridge>()
             .Include(f => f.FridgeModel)
             .AsNoTracking()
-            .SingleOrDefaultAsync(f => f.Id == id) ?? throw new NotFoundException($"A Fridge with id: {id} not found");
+            .FirstOrDefaultAsync(f => f.Id == id);
     }
 }

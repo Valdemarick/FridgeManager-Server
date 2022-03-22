@@ -39,6 +39,11 @@ namespace Api.Controllers
         public async Task<IActionResult> GetProductByIdAsync([FromRoute] Guid id)
         {
             var product = await _productService.GetProductByIdAsync(id);
+            if (product == null)
+            {
+                return NotFound();
+            }
+
             return Ok(product);
         }
 
@@ -93,42 +98,5 @@ namespace Api.Controllers
             await _productService.UpdateProductAsync(productForUpdateDto);
             return NoContent();
         }
-        
-        //unnecessary
-        /// <summary>
-        /// Updates a product partially by id
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="patchDock"></param>
-        /// <returns></returns>
-        //[HttpPatch("{id}"), Authorize(Roles = "Administrator")]
-        //public async Task<IActionResult> UpdateProductPartiallyById([FromRoute] Guid id,
-        //                                                            [FromBody] JsonPatchDocument<ProductForUpdateDto> patchDock)
-        //{
-        //    var product = await _unitOfWork.Product.GetByIdAsync(id);
-        //    if (product == null)
-        //    {
-        //        _logger.LogInfo($"A product with id: {id} doesn't exist in the database");
-        //        return NotFound();
-        //    }
-
-        //    var productToPatch = _mapper.Map<ProductForUpdateDto>(product);
-
-        //    patchDock.ApplyTo(productToPatch);
-
-        //    TryValidateModel(productToPatch);
-
-        //    if (!ModelState.IsValid)
-        //    {
-        //        _logger.LogWarn("Invalid model state for 'JsonPatchDocument<ProductForUpdateDto>' object");
-        //        return UnprocessableEntity(ModelState);
-        //    }
-
-        //    _mapper.Map(productToPatch, product);
-
-        //    await _unitOfWork.SaveAsync();
-
-        //    return NoContent();
-        //}
     }
 }
