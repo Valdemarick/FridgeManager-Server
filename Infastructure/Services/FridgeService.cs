@@ -11,8 +11,8 @@ namespace Infastructure.Services
 {
     public class FridgeService : IFridgeService
     {
-        private IUnitOfWork _unitOfWork;
-        private IMapper _mapper;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
 
         public FridgeService(IUnitOfWork unitOfWork, IMapper mapper)
         {
@@ -34,9 +34,9 @@ namespace Infastructure.Services
             }
 
             var fridge = _mapper.Map<Fridge>(fridgeForCreationDto);
-            await _unitOfWork.Fridge.CreateAsync(fridge);
+            var createdFridge = await _unitOfWork.Fridge.CreateAsync(fridge);
 
-            return _mapper.Map<FridgeDto>(fridge);
+            return _mapper.Map<FridgeDto>(createdFridge);
         }
 
         public async Task DeleteFridgeByIdAsync(Guid id) =>

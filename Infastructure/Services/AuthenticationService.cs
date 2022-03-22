@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Managers;
+﻿using Application.Common.Exceptions;
+using Application.Common.Interfaces.Managers;
 using Application.Common.Interfaces.Services;
 using Application.Models.User;
 using AutoMapper;
@@ -25,11 +26,15 @@ namespace Infastructure.Services
         }
         public async Task<string> SignInAsync(UserForAuthenticationDto userForAuthenticationDto)
         {
-            bool isExists = await _authenticationManager.ValidateUser(userForAuthenticationDto);
+            if (userForAuthenticationDto == null)
+            {
+                throw new ArgumentNullException(nameof(UserForAuthenticationDto));
+            }
 
+            bool isExists = await _authenticationManager.ValidateUser(userForAuthenticationDto);
             if (!isExists)
             {
-                throw new ArgumentException("This user does not exist");
+                throw new NotFoundException("This user does not exist");
             }
 
             return await _authenticationManager.CreateToken();
@@ -37,6 +42,11 @@ namespace Infastructure.Services
 
         public async Task SignUpAsync(UserForRegistrationDto userForRegistrationDto)
         {
+            if (userForRegistrationDto == null)
+            {
+                throw new ArgumentNullException(nameof(UserForRegistrationDto));
+            }
+
             var user = _mapper.Map<User>(userForRegistrationDto);
 
             var result = await _userManager.CreateAsync(user, userForRegistrationDto.Password);
