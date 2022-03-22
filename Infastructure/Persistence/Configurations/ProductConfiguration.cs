@@ -30,10 +30,9 @@ namespace Infastructure.Persistence.Configurations
             builder.Property(p => p.Id).ValueGeneratedOnAdd();
 
             builder.HasCheckConstraint("Quantity", "Quantity > 0 AND Quantity < 10");
-            builder.Property(pt => pt.Quantity).HasDefaultValue(1);
+            builder.Property(pt => pt.Quantity).IsRequired();
 
             builder.Property(pt => pt.Name).HasMaxLength(30);
-
             builder.HasIndex(pt => pt.Name).IsUnique();
         }
     }

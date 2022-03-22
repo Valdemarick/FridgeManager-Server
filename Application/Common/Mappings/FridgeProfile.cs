@@ -16,11 +16,11 @@ namespace Application.Common.Mappings
 
             CreateMap<FridgeForCreationDto, Fridge>()
                 .ForMember(dest => dest.FridgeModelId,
-                opt => opt.MapFrom(src => src.ModelId));
+                opt => opt.MapFrom(src => src.FridgeModelId));
 
             CreateMap<FridgeForUpdateDto, Fridge>()
                 .ForMember(dest => dest.FridgeModelId,
-                opt => opt.MapFrom(src => src.ModelId)).ReverseMap();
+                opt => opt.MapFrom(src => src.FridgeModelId)).ReverseMap();
         }
     }
 }

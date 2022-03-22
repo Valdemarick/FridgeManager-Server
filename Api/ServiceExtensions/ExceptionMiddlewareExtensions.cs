@@ -6,12 +6,13 @@ using Microsoft.AspNetCore.Http;
 using System.IO;
 using System.Net;
 using System.Text.Json;
+
 namespace Api.ServiceExtensions
 {
     public static class ExceptionMiddlewareExtensions
     {
         public static void ConfigureExceptionHandler(this IApplicationBuilder app,
-        ILoggerManager logger)
+                                                     ILoggerManager logger)
         {
             app.UseExceptionHandler(appError =>
             {
@@ -27,7 +28,7 @@ namespace Api.ServiceExtensions
                         var error = new ErrorDetails()
                         {
                             StatusCode = context.Response.StatusCode,
-                            Message = "Internal Server Error"
+                            Message = "Internal server error"
                         };
 
                         await context.Response.WriteAsync(JsonSerializer.Serialize(error));
