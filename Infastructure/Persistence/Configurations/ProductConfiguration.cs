@@ -22,7 +22,7 @@ namespace Infastructure.Persistence.Configurations
                 .HasForeignKey(pt => pt.ProductId),
             j =>
             {
-                j.HasKey(t => new { t.FridgeId, t.ProductId });
+                j.HasKey(t => t.Id);
                 j.ToTable("Fridges_Products");
             });
 
