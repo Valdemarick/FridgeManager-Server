@@ -1,5 +1,4 @@
-﻿using Application.Common.Exceptions;
-using Application.Common.Interfaces.Managers;
+﻿using Application.Common.Interfaces.Managers;
 using Application.Common.Interfaces.Services;
 using Application.Models.Fridge;
 using Application.Models.FridgeProduct;
@@ -22,9 +21,9 @@ namespace Infastructure.Services
             _mapper = mapper;
         }
 
-        public async Task<FridgeProductDto> GetFridgeProductByIdsAsync(Guid fridgeId, Guid productId)
+        public async Task<FridgeProductDto> GetFridgeProductByIdAsync(Guid id)
         {
-            var fridgeProduct = await _unitOfWork.FridgeProduct.GetFridgeProductByIdsAsync(fridgeId, productId);
+            var fridgeProduct = await _unitOfWork.FridgeProduct.GetFridgeProductByIdAsync(id);
             return _mapper.Map<FridgeProductDto>(fridgeProduct);
         }
 
@@ -35,7 +34,7 @@ namespace Infastructure.Services
         }
 
         public async Task<List<FridgeProductDto>> CreateAsync(List<FridgeProductForCreationDto> fridgeProductForCreationDtos)
-            {
+        {
             if (fridgeProductForCreationDtos == null)
             {
                 throw new ArgumentNullException(nameof(FridgeProductForCreationDto));
@@ -44,33 +43,26 @@ namespace Infastructure.Services
             var createdFridgeProductRecords = new List<FridgeProductDto>();
             foreach (var fridgeProduct in fridgeProductForCreationDtos)
             {
-                var fridgeProductForCreate = _mapper.Map<FridgeProduct>(fridgeProduct);
-                var createdFridgeProduct = await _unitOfWork.FridgeProduct.CreateAsync(fridgeProductForCreate);
-
+                var createdFridgeProduct = await _unitOfWork.FridgeProduct.CreateAsync(_mapper.Map<FridgeProduct>(fridgeProduct));
                 createdFridgeProductRecords.Add(_mapper.Map<FridgeProductDto>(createdFridgeProduct));
             }
 
             return createdFridgeProductRecords;
         }
 
-        public async Task DeleteFridgeProductByIdsAsync(Guid fridgeId, Guid productId) =>
-            await _unitOfWork.FridgeProduct.DeleteByIdsAsync(fridgeId, productId);
+        public async Task DeleteFridgeProductByIdAsync(Guid id) =>
+            await _unitOfWork.FridgeProduct.DeleteAsync(id);
 
-        public async Task AddProductWhereEmpty()
+        public async Task<List<FridgeProductForCreationDto>> AddProductWhereEmptyAsync()
         {
-            var records = await _unitOfWork.FridgeProduct.FindRecorsdWhereProductQuantityIsZero();
-            if (records == null)
+            var records = await _unitOfWork.FridgeProduct.FindRecorsdWhereProductQuantityIsZeroAsync();
+
+            foreach (var record in records)
             {
-                throw new NotFoundException($"No one record was found");
+                await DeleteFridgeProductByIdAsync(record.Id);
             }
 
-            foreach(var record in records)
-            {
-                await DeleteFridgeProductByIdsAsync(record.FridgeId, record.ProductId);
-            }
-
-            var fridgeProductsForCreation = _mapper.Map<List<FridgeProductForCreationDto>>(records);
-            await CreateAsync(fridgeProductsForCreation);
+            return _mapper.Map<List<FridgeProductForCreationDto>>(records);
         }
     }
 }

@@ -8,10 +8,10 @@ namespace Application.Common.Interfaces.Services
 {
     public interface IFridgeProductService
     {
-        Task<FridgeProductDto> GetFridgeProductByIdsAsync(Guid fridgeId, Guid productId);
+        Task<FridgeProductDto> GetFridgeProductByIdAsync(Guid id);
         Task<List<FridgeProductDto>> GetProductsByFridgeIdAsync(Guid fridgeId);
         Task<List<FridgeProductDto>> CreateAsync(List<FridgeProductForCreationDto> fridgeProductForCreationDtos);
-        Task DeleteFridgeProductByIdsAsync(Guid fridgeId, Guid productId);
-        Task AddProductWhereEmpty();
+        Task DeleteFridgeProductByIdAsync(Guid id);
+        Task<List<FridgeProductForCreationDto>> AddProductWhereEmptyAsync();
     }
 }

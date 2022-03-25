@@ -25,9 +25,14 @@ namespace Api.Controllers
         /// <param name="fridgeId"></param>
         /// <returns></returns>
         [HttpGet("fridge/{fridgeId}/products"), Authorize]
-        public async Task<IActionResult> GetProductsByFridgeId([FromRoute] Guid fridgeId)
+        public async Task<IActionResult> GetProductsByFridgeIdAsync([FromRoute] Guid fridgeId)
         {
             var fridgeProducts = await _fridgeProductService.GetProductsByFridgeIdAsync(fridgeId);
+            if (fridgeProducts.Count == 0)
+            {
+                return NotFound();
+            }
+
             return Ok(fridgeProducts);
         }
 
@@ -37,11 +42,11 @@ namespace Api.Controllers
         /// <param name="fridgeId"></param>
         /// <param name="productId"></param>
         /// <returns></returns>
-        [HttpGet("fridge/{fridgeId}/product/{productId}"), Authorize]
-        [ActionName(nameof(GetFridgeProductByIds))]
-        public async Task<IActionResult> GetFridgeProductByIds([FromRoute] Guid fridgeId, Guid productId)
+        [HttpGet("{id}"), Authorize]
+        [ActionName(nameof(GetFridgeProductByIdAsync))]
+        public async Task<IActionResult> GetFridgeProductByIdAsync([FromRoute] Guid id)
         {
-            var fridgeProduct = await _fridgeProductService.GetFridgeProductByIdsAsync(fridgeId, productId);
+            var fridgeProduct = await _fridgeProductService.GetFridgeProductByIdAsync(id);
             if (fridgeProduct == null)
             {
                 return NotFound();
@@ -56,7 +61,7 @@ namespace Api.Controllers
         /// <param name="fridgeProductForCreationDtos"></param>
         /// <returns></returns>
         [HttpPost, Authorize]
-        public async Task<IActionResult> AddProductIntoFridge([FromBody] List<FridgeProductForCreationDto> fridgeProductForCreationDtos)
+        public async Task<IActionResult> AddProductIntoFridgeAsync([FromBody] List<FridgeProductForCreationDto> fridgeProductForCreationDtos)
         {
             if (!ModelState.IsValid)
             {
@@ -73,10 +78,10 @@ namespace Api.Controllers
         /// <param name="fridgeId"></param>
         /// <param name="productId"></param>
         /// <returns></returns>
-        [HttpDelete("fridge/{fridgeId}/product/{productId}"), Authorize(Roles = "Administrator")]
-        public async Task<IActionResult> DeleteFridgeProductByIds([FromRoute] Guid fridgeId, [FromRoute] Guid productId)
+        [HttpDelete("{id}"), Authorize(Roles = "Administrator")]
+        public async Task<IActionResult> DeleteFridgeProductByIdAsync([FromRoute] Guid id)
         {
-            await _fridgeProductService.DeleteFridgeProductByIdsAsync(fridgeId, productId);
+            await _fridgeProductService.DeleteFridgeProductByIdAsync(id);
             return NoContent();
         }
 
@@ -85,11 +90,16 @@ namespace Api.Controllers
         /// and adds products with a 'Quantity' from 'Products' table into 'Fridges_Products'
         /// </summary>
         /// <returns></returns>
-        [HttpPut("where-products-are-empty")]
-        public async Task<IActionResult> AddProductWhereEmpty()
+        [HttpPut("where-products-are-empty"), Authorize]
+        public async Task<IActionResult> AddProductWhereEmptyAsync()
         {
-            await _fridgeProductService.AddProductWhereEmpty();
-            return NoContent();
+            var records = await _fridgeProductService.AddProductWhereEmptyAsync();
+            if (records.Count == 0)
+            {
+                return NotFound();
+            }
+
+            return await AddProductIntoFridgeAsync(records);
         }
     }
 }

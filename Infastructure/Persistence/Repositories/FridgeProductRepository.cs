@@ -1,5 +1,4 @@
-﻿using Application.Common.Exceptions;
-using Application.Common.Interfaces.Contexts;
+﻿using Application.Common.Interfaces.Contexts;
 using Application.Common.Interfaces.Managers;
 using Application.Common.Interfaces.Repositories;
 using Domain.Entities;
@@ -23,30 +22,23 @@ namespace Infastructure.Persistence.Repositories
             .AsNoTracking()
             .ToListAsync();
 
-        public async Task<FridgeProduct> GetFridgeProductByIdsAsync(Guid fridgeId, Guid productId) =>
+        public async Task<FridgeProduct> GetFridgeProductByIdAsync(Guid id) =>
             await AppContext.Set<FridgeProduct>()
-            .Where(fp => fp.FridgeId == fridgeId && fp.ProductId == productId)
+            .Where(fp => fp.Id == id)
             .Include(fp => fp.Product)
             .AsNoTracking()
             .FirstOrDefaultAsync();
 
-        public async Task DeleteByIdsAsync(Guid fridgeId, Guid productId)
-        {
-            var existing = await AppContext.Set<FridgeProduct>().FindAsync(fridgeId, productId);
-            if (existing == null)
-            {
-                throw new NotFoundException($"A record with fridgeId: {fridgeId} and productId: {productId}" +
-                    $"doesn't exist in the database");
-            }
-
-            AppContext.Set<FridgeProduct>().Remove(existing);
-            await AppContext.SaveChangesAsync();
-        }
-
-        public async Task<List<FridgeProduct>> FindRecorsdWhereProductQuantityIsZero()
+        public async Task<List<FridgeProduct>> FindRecorsdWhereProductQuantityIsZeroAsync()
         {
             var parameteres = new SqlParameter[]
             {
+                new SqlParameter
+                {
+                    ParameterName = "Id",
+                    SqlDbType = System.Data.SqlDbType.UniqueIdentifier,
+                    Direction = System.Data.ParameterDirection.Output
+                },
                 new SqlParameter
                 {
                     ParameterName = "FridgeId",
@@ -68,7 +60,7 @@ namespace Infastructure.Persistence.Repositories
             };
 
             var record = await AppContext.FridgeProducts
-                .FromSqlRaw("FindEmptyProducts @FridgeId OUT, @ProductId OUT, @ProductCount OUT", parameteres)
+                .FromSqlRaw("FindEmptyProducts @Id OUT, @FridgeId OUT, @ProductId OUT, @ProductCount OUT", parameteres)
                 .ToListAsync();
 
             return record;
