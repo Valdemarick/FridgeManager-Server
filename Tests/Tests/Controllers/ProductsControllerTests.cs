@@ -18,7 +18,6 @@ namespace Tests.Tests.Controllers
     public class ProductsControllerTests
     {
         #region fields
-        private readonly FakeUnitOfWork _fakeUnitOfWork = new();
         private readonly FakeProductService _service = new();
         private readonly FakeMapper _fakeMapper = new();
         private readonly ProductsController _controller;
@@ -73,14 +72,14 @@ namespace Tests.Tests.Controllers
             //Assert
             Guid id = new Guid();
 
-            _fakeUnitOfWork.Mock.Setup(uow => uow.Product.GetByIdReadOnlyAsync(It.IsAny<Guid>())).Returns(Task.FromResult(new Product()
+            _service.Mock.Setup(s => s.GetProductByIdAsync(id)).Returns(Task.FromResult(new ProductDto()
             {
                 Id = Guid.NewGuid(),
                 Name = "Candy"
             }));
 
             //Act 
-            var response = await _controller.GetProductByIdAsync(id);
+            var response = await _controller.GetProductByIdAsync(Guid.NewGuid());
             var result = response as NotFoundResult;
 
             //Assert
@@ -96,7 +95,7 @@ namespace Tests.Tests.Controllers
             //Arrange
             Guid id = Guid.NewGuid();
 
-            _service.Mock.Setup(s => s.GetProductByIdAsync(It.IsAny<Guid>())).Returns(Task.FromResult(new ProductDto()
+            _service.Mock.Setup(s => s.GetProductByIdAsync(id)).Returns(Task.FromResult(new ProductDto()
             {
                 Id = id,
                 Name = "Candy",
@@ -152,7 +151,7 @@ namespace Tests.Tests.Controllers
             };
             var product = _fakeMapper.Mapper.Map<Product>(productForCreation);
 
-            _service.Mock.Setup(s => s.CreateProductAsync(It.IsAny<ProductForCreationDto>())).ReturnsAsync(_fakeMapper.Mapper.Map<ProductDto>(product));
+            _service.Mock.Setup(s => s.CreateProductAsync(productForCreation)).ReturnsAsync(_fakeMapper.Mapper.Map<ProductDto>(product));
 
             //Act
             var response = await _controller.CreateProductAsync(productForCreation);

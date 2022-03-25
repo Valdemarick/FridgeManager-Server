@@ -1,4 +1,5 @@
-﻿using Application.Common.Mappings;
+﻿#region namespaces
+using Application.Common.Mappings;
 using Application.Models.FridgeModel;
 using AutoMapper;
 using Domain.Entities;
@@ -9,15 +10,19 @@ using System.Linq;
 using System.Threading.Tasks;
 using Tests.Mocks;
 using Xunit;
+#endregion
 
 namespace Tests.Tests.Services
 {
     public class FridgeModelServiceTests
     {
+        #region fields
         private readonly FakeMapper _fakeMapper = new();
         private readonly FakeUnitOfWork _fakeUnitOfWork = new();
         private readonly FridgeModelService _fridgeModelService;
+        #endregion
 
+        #region ctor
         public FridgeModelServiceTests()
         {
             var mappingConfig = new MapperConfiguration(mc =>
@@ -28,9 +33,11 @@ namespace Tests.Tests.Services
 
             _fridgeModelService = new FridgeModelService(_fakeUnitOfWork.UnitOfWork, _fakeMapper.Mapper);
         }
+        #endregion
 
+        #region get_tests
         [Fact]
-        public async Task GetFridgeModelsAsync_ReturnsOk_WithFridgeModelList()
+        public async Task GetFridgeModelsAsync_ReturnsList()
         {
             //Arrange
             _fakeUnitOfWork.Mock.Setup(uow => uow.FridgeModel.GetAllAsync()).Returns(Task.FromResult(new List<FridgeModel>()
@@ -40,13 +47,15 @@ namespace Tests.Tests.Services
             }));
 
             //Act
-            var response = await _fridgeModelService.GetAllModelsAsync();
+            var models = await _fridgeModelService.GetAllModelsAsync();
 
             //Assert
-            Assert.NotNull(response);
-            Assert.IsType<List<FridgeModelDto>>(response);
-            Assert.Equal(2, response.Count());
-            Assert.Equal("LG", response[0].Name);
+            Assert.NotNull(models);
+            Assert.IsType<List<FridgeModelDto>>(models);
+
+            Assert.Equal(2, models.Count());
+            Assert.Equal("LG", models[0].Name);
         }
+        #endregion
     }
 }

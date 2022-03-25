@@ -62,7 +62,14 @@ namespace Tests.Tests.Services
         public async Task GetProductbyIdAsync_InvalidGuidPasses_ReturnsNull()
         {
             //Arrange
-            _fakeUnitOfWork.Mock.Setup(uow => uow.Product.GetByIdAsync(It.IsAny<Guid>())).Returns(Task.FromResult(new Product() { Name = "Bottle of beer" }));
+            Guid id = Guid.NewGuid();
+
+            _fakeUnitOfWork.Mock.Setup(uow => uow.Product.GetByIdAsync(id))
+                .Returns(Task.FromResult(new Product() 
+                {
+                    Id = id,
+                    Name = "Bottle of beer"
+                }));
 
             //Act
             var product = await _service.GetProductByIdAsync(Guid.NewGuid());
@@ -77,7 +84,7 @@ namespace Tests.Tests.Services
             //Arrange
             Guid id = Guid.NewGuid();
 
-            _fakeUnitOfWork.Mock.Setup(uow => uow.Product.GetByIdReadOnlyAsync(It.IsAny<Guid>())).Returns(Task.FromResult(new Product()
+            _fakeUnitOfWork.Mock.Setup(uow => uow.Product.GetByIdReadOnlyAsync(id)).Returns(Task.FromResult(new Product()
             {
                 Id = id,
                 Name = "Bootle of beer",
@@ -123,7 +130,6 @@ namespace Tests.Tests.Services
             //Act
             var createdProduct = await _service.CreateProductAsync(productForCreation);
 
-            _fakeUnitOfWork.Mock.Verify(uow => uow.Product.CreateAsync(It.IsAny<Product>()), Times.Once);
             //Assert
             Assert.NotNull(createdProduct);
             Assert.IsType<ProductDto>(createdProduct);
@@ -146,7 +152,7 @@ namespace Tests.Tests.Services
                 Name = "Candy"
             };
 
-            _fakeUnitOfWork.Mock.Setup(uow => uow.Product.DeleteAsync(It.IsAny<Guid>()));
+            _fakeUnitOfWork.Mock.Setup(uow => uow.Product.DeleteAsync(id));
 
             //Act
             await _service.DeleteProductByIdAsync(id);
