@@ -11,11 +11,11 @@ namespace Application.Common.Mappings
         {
             CreateMap<FridgeProduct, FridgeProductDto>()
                 .ForMember(dest => dest.ProductName,
-                opt => opt.MapFrom(src => src.Product.Name))
-                .ForMember(dest => dest.ProductCount,
-                opt => opt.MapFrom(src => src.ProductQuantity)).ReverseMap();
+                opt => opt.MapFrom(src => src.Product.Name)).ReverseMap();
 
             CreateMap<FridgeProductForCreationDto, FridgeProduct>().ReverseMap();
+
+            CreateMap<FridgeProductForUpdateDto, FridgeProduct>();
         }
     }
 }
