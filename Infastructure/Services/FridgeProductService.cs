@@ -64,5 +64,8 @@ namespace Infastructure.Services
 
             return _mapper.Map<List<FridgeProductForCreationDto>>(records);
         }
+
+        public async Task UpdateFridgeProductAsync(FridgeProductForUpdateDto fridgeProductForUpdateDto) =>
+            await _unitOfWork.FridgeProduct.UpdateAsync(_mapper.Map<FridgeProduct>(fridgeProductForUpdateDto));
     }
 }

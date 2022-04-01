@@ -13,5 +13,6 @@ namespace Application.Common.Interfaces.Services
         Task<List<FridgeProductDto>> CreateAsync(List<FridgeProductForCreationDto> fridgeProductForCreationDtos);
         Task DeleteFridgeProductByIdAsync(Guid id);
         Task<List<FridgeProductForCreationDto>> AddProductWhereEmptyAsync();
+        Task UpdateFridgeProductAsync(FridgeProductForUpdateDto fridgeProductForUpdateDto);
     }
 }

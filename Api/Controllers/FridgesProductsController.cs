@@ -61,7 +61,7 @@ namespace Api.Controllers
         /// <param name="fridgeProductForCreationDtos"></param>
         /// <returns></returns>
         [HttpPost, Authorize]
-        public async Task<IActionResult> AddProductIntoFridgeAsync([FromBody] List<FridgeProductForCreationDto> fridgeProductForCreationDtos)
+        public async Task<IActionResult> AddProductsIntoFridgeAsync([FromBody] List<FridgeProductForCreationDto> fridgeProductForCreationDtos)
         {
             if (!ModelState.IsValid)
             {
@@ -90,8 +90,8 @@ namespace Api.Controllers
         /// and adds products with a 'Quantity' from 'Products' table into 'Fridges_Products'
         /// </summary>
         /// <returns></returns>
-        [HttpPut("where-products-are-empty"), Authorize]
-        public async Task<IActionResult> AddProductWhereEmptyAsync()
+        [HttpPost("where-products-are-empty"), Authorize]
+        public async Task<IActionResult> AddProductsWhereEmptyAsync()
         {
             var records = await _fridgeProductService.AddProductWhereEmptyAsync();
             if (records.Count == 0)
@@ -99,7 +99,24 @@ namespace Api.Controllers
                 return NotFound();
             }
 
-            return await AddProductIntoFridgeAsync(records);
+            return await AddProductsIntoFridgeAsync(records);
+        }
+
+        /// <summary>
+        /// Updates a fridge product
+        /// </summary>
+        /// <param name="fridgeProductForUpdateDto"></param>
+        /// <returns></returns>
+        [HttpPut, Authorize(Roles = "Administrator")]
+        public async Task<IActionResult> UpdateFridgeProductAsync(FridgeProductForUpdateDto fridgeProductForUpdateDto)
+        {
+            if (!ModelState.IsValid) 
+            {
+                return UnprocessableEntity(fridgeProductForUpdateDto);
+            }
+
+            await _fridgeProductService.UpdateFridgeProductAsync(fridgeProductForUpdateDto);
+            return NoContent();
         }
     }
 }
