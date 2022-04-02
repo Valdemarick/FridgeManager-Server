@@ -28,11 +28,6 @@ namespace Api.Controllers
         public async Task<IActionResult> GetProductsByFridgeIdAsync([FromRoute] Guid fridgeId)
         {
             var fridgeProducts = await _fridgeProductService.GetProductsByFridgeIdAsync(fridgeId);
-            if (fridgeProducts.Count == 0)
-            {
-                return NotFound();
-            }
-
             return Ok(fridgeProducts);
         }
 
