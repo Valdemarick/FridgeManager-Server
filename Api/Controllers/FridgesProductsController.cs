@@ -63,7 +63,7 @@ namespace Api.Controllers
                 return UnprocessableEntity(fridgeProductForCreationDtos);
             }
 
-            var createdFridgesProducts = await _fridgeProductService.CreateAsync(fridgeProductForCreationDtos);
+            var addedProducts = await _fridgeProductService.CreateAsync(fridgeProductForCreationDtos);
             return StatusCode(201);
         }
 

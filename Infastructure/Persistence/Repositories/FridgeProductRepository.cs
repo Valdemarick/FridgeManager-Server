@@ -29,7 +29,7 @@ namespace Infastructure.Persistence.Repositories
             .AsNoTracking()
             .FirstOrDefaultAsync();
 
-        public async Task<List<FridgeProduct>> FindRecorsdWhereProductQuantityIsZeroAsync()
+        public async Task<List<FridgeProduct>> FindRecordsWhereProductQuantityIsZeroAsync()
         {
             var parameteres = new SqlParameter[]
             {
@@ -59,11 +59,11 @@ namespace Infastructure.Persistence.Repositories
                 },
             };
 
-            var record = await AppContext.FridgeProducts
+            var records = await AppContext.FridgeProducts
                 .FromSqlRaw("FindEmptyProducts @Id OUT, @FridgeId OUT, @ProductId OUT, @ProductCount OUT", parameteres)
                 .ToListAsync();
 
-            return record;
+            return records;
         }
     }
 }

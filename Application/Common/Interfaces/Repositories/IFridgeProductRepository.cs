@@ -9,6 +9,6 @@ namespace Application.Common.Interfaces.Repositories
     {
         Task<List<FridgeProduct>> GetFridgeProductByFridgeIdAsync(Guid fridgeId);
         Task<FridgeProduct> GetFridgeProductByIdAsync(Guid id);
-        Task<List<FridgeProduct>> FindRecorsdWhereProductQuantityIsZeroAsync();
+        Task<List<FridgeProduct>> FindRecordsWhereProductQuantityIsZeroAsync();
     }
 }
