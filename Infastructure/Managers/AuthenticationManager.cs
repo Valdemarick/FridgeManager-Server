@@ -25,7 +25,7 @@ namespace Infastructure.Managers
             _configuration = configuration;
         }
 
-        public async Task<bool> ValidateUser(UserForAuthenticationDto userForAuthenticationDto)
+        public async Task<bool> ValidateUserAsync(UserForAuthenticationDto userForAuthenticationDto)
         {
             _user = await _userManager.FindByNameAsync(userForAuthenticationDto.UserName);
 
@@ -33,10 +33,10 @@ namespace Infastructure.Managers
             return isExists;
         }
 
-        public async Task<string> CreateToken()
+        public async Task<string> CreateTokenAsync()
         {
             var signingCredentials = GetSigningCredentials();
-            var claims = await GetClaims();
+            var claims = await GetClaimsAsync();
             var tokenOptions = GenerateTokenOptions(signingCredentials, claims);
 
             return new JwtSecurityTokenHandler().WriteToken(tokenOptions);
@@ -50,7 +50,7 @@ namespace Infastructure.Managers
             return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
         }
 
-        private async Task<List<Claim>> GetClaims()
+        private async Task<List<Claim>> GetClaimsAsync()
         {
             var claims = new List<Claim> { new Claim(ClaimTypes.Name, _user.UserName) };
 

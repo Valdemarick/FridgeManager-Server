@@ -22,7 +22,7 @@ namespace Api.Controllers
         /// <param name="userForRegistrationDto"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> RegisterUser([FromBody] UserForRegistrationDto userForRegistrationDto)
+        public async Task<IActionResult> RegisterUserAsync([FromBody] UserForRegistrationDto userForRegistrationDto)
         {
             if (!ModelState.IsValid)
             {
@@ -39,7 +39,7 @@ namespace Api.Controllers
         /// <param name="userForAuthenticationDto"></param>
         /// <returns></returns>
         [HttpPost("login")]
-        public async Task<IActionResult> Authenticate([FromBody] UserForAuthenticationDto userForAuthenticationDto)
+        public async Task<IActionResult> AuthenticateAsync([FromBody] UserForAuthenticationDto userForAuthenticationDto)
         {
             if (!ModelState.IsValid)
             {

@@ -5,7 +5,7 @@ namespace Application.Common.Interfaces.Managers
 {
     public interface IAuthenticationManager
     {
-        Task<bool> ValidateUser(UserForAuthenticationDto userForAuthenticationDto);
-        Task<string> CreateToken();
+        Task<bool> ValidateUserAsync(UserForAuthenticationDto userForAuthenticationDto);
+        Task<string> CreateTokenAsync();
     }
 }

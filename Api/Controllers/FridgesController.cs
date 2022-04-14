@@ -70,7 +70,7 @@ namespace Api.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpDelete("{id}"), Authorize(Roles = "Administrator")]
-        public async Task<IActionResult> DeleteFridgeById([FromRoute] Guid id)
+        public async Task<IActionResult> DeleteFridgeByIdAsync([FromRoute] Guid id)
         {
             await _fridgeService.DeleteFridgeByIdAsync(id);
             return NoContent();

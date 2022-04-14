@@ -24,6 +24,7 @@ namespace Infastructure.Services
             _userManager = userManager;
             _authenticationManager = authenticationManager;
         }
+
         public async Task<string> SignInAsync(UserForAuthenticationDto userForAuthenticationDto)
         {
             if (userForAuthenticationDto == null)
@@ -31,13 +32,13 @@ namespace Infastructure.Services
                 throw new ArgumentNullException(nameof(UserForAuthenticationDto));
             }
 
-            bool isExists = await _authenticationManager.ValidateUser(userForAuthenticationDto);
+            bool isExists = await _authenticationManager.ValidateUserAsync(userForAuthenticationDto);
             if (!isExists)
             {
                 throw new NotFoundException("This user does not exist");
             }
 
-            return await _authenticationManager.CreateToken();
+            return await _authenticationManager.CreateTokenAsync();
         }
 
         public async Task SignUpAsync(UserForRegistrationDto userForRegistrationDto)
