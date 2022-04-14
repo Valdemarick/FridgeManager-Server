@@ -38,7 +38,7 @@ namespace Tests.Tests.Controllers
 
         #region get_tests
         [Fact]
-        public async Task GetProductsByFridgeId_NoOneRecordFounds_ReturnNotFound()
+        public async Task GetProductsByFridgeId_ReturnsOkObjectResult_ReturnsEmptyList()
         {
             //Arrange
             Guid fridgeId = Guid.NewGuid();
@@ -53,14 +53,18 @@ namespace Tests.Tests.Controllers
 
             //Act
             var response = await _controller.GetProductsByFridgeIdAsync(Guid.NewGuid());
-            var result = response as NotFoundResult;
+            var result = response as OkObjectResult;
+            var products = result.Value as List<FridgeProductDto>;
 
             //Assert
             Assert.NotNull(response);
-            Assert.IsType<NotFoundResult>(response);
+            Assert.IsType<OkObjectResult>(response);
 
             Assert.NotNull(result);
-            Assert.Equal(404, result.StatusCode);
+            Assert.Equal(200, result.StatusCode);
+
+            Assert.NotNull(products);
+            Assert.Empty(products);
         }
 
         [Fact]
@@ -71,8 +75,8 @@ namespace Tests.Tests.Controllers
 
             _fakeService.Mock.Setup(s => s.GetProductsByFridgeIdAsync(id)).Returns(Task.FromResult(new List<FridgeProductDto>()
             {
-                new FridgeProductDto() { FridgeId = id, ProductCount = 1 },
-                new FridgeProductDto() { FridgeId = id, ProductCount = 3 }
+                new FridgeProductDto() { FridgeId = id, ProductQuantity = 1 },
+                new FridgeProductDto() { FridgeId = id, ProductQuantity = 3 }
             }));
 
             //Act
@@ -91,7 +95,7 @@ namespace Tests.Tests.Controllers
             Assert.IsType<List<FridgeProductDto>>(products);
 
             Assert.Equal(id, products[0].FridgeId);
-            Assert.Equal(3, products[1].ProductCount);
+            Assert.Equal(3, products[1].ProductQuantity);
         }
 
         [Fact]
@@ -103,7 +107,7 @@ namespace Tests.Tests.Controllers
             _fakeService.Mock.Setup(s => s.GetFridgeProductByIdAsync(id)).ReturnsAsync(new FridgeProductDto()
             {
                 Id = id,
-                ProductCount = 3
+                ProductQuantity = 3
             });
 
             //Act
@@ -127,7 +131,7 @@ namespace Tests.Tests.Controllers
             _fakeService.Mock.Setup(s => s.GetFridgeProductByIdAsync(id)).ReturnsAsync(new FridgeProductDto()
             {
                 Id = id,
-                ProductCount = 3
+                ProductQuantity = 3
             });
 
             //Act
@@ -145,7 +149,7 @@ namespace Tests.Tests.Controllers
             Assert.NotNull(fridgeProduct);
             Assert.IsType<FridgeProductDto>(fridgeProduct);
 
-            Assert.Equal(3, fridgeProduct.ProductCount);
+            Assert.Equal(3, fridgeProduct.ProductQuantity);
         }
         #endregion
 
@@ -157,7 +161,7 @@ namespace Tests.Tests.Controllers
             _controller.ModelState.AddModelError("ProductId", "'ProductId' property is a required field");
 
             //Act
-            var response = await _controller.AddProductIntoFridgeAsync(new List<FridgeProductForCreationDto>());
+            var response = await _controller.AddProductsIntoFridgeAsync(new List<FridgeProductForCreationDto>());
 
             //Assert
             Assert.NotNull(response);
@@ -168,7 +172,7 @@ namespace Tests.Tests.Controllers
         public async Task AddProductIntoFridgeAsync_ValidDataPasses_ReturnsCreated()
         {
             //Act
-            var response = await _controller.AddProductIntoFridgeAsync(new List<FridgeProductForCreationDto>());
+            var response = await _controller.AddProductsIntoFridgeAsync(new List<FridgeProductForCreationDto>());
 
             //Assert
             Assert.NotNull(response);
@@ -197,7 +201,7 @@ namespace Tests.Tests.Controllers
             _fakeService.Mock.Setup(s => s.AddProductWhereEmptyAsync()).ReturnsAsync(new List<FridgeProductForCreationDto>());
 
             //Act
-            var response = await _controller.AddProductWhereEmptyAsync();
+            var response = await _controller.AddProductsWhereEmptyAsync();
 
             //Assert
             Assert.NotNull(response);
@@ -214,7 +218,7 @@ namespace Tests.Tests.Controllers
             });
 
             //Act
-            var response = await _controller.AddProductWhereEmptyAsync();
+            var response = await _controller.AddProductsWhereEmptyAsync();
 
             //Assert
             Assert.NotNull(response);

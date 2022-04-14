@@ -64,6 +64,11 @@ namespace Infastructure.Persistence.Repositories
 
         public virtual async Task UpdateAsync(TEntity entity)
         {
+            if (entity == null)
+            {
+                throw new ArgumentNullException(nameof(TEntity));
+            }
+
             bool isExists = await AppContext.Set<TEntity>().AnyAsync(e => e.Id == entity.Id);
             if (!isExists)
             {

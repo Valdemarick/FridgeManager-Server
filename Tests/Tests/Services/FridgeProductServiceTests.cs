@@ -112,7 +112,7 @@ namespace Tests.Tests.Services
             Assert.IsType<List<FridgeProductDto>>(result);
 
             Assert.Equal(2, result.Count);
-            Assert.Equal(3, result[0].ProductCount);
+            Assert.Equal(3, result[0].ProductQuantity);
         }
         #endregion
 
@@ -157,7 +157,7 @@ namespace Tests.Tests.Services
             Assert.IsType<List<FridgeProductDto>>(result);
 
             Assert.Equal(2, result.Count);
-            Assert.Equal(1, result[0].ProductCount);
+            Assert.Equal(1, result[0].ProductQuantity);
         }
         #endregion
 
@@ -166,7 +166,7 @@ namespace Tests.Tests.Services
         public async Task AddProductWhereEmpty_NoOneRecordFounds_ReturnsEmptyList()
         {
             //Arrange
-            _fakeUnitOfWork.Mock.Setup(uow => uow.FridgeProduct.FindRecorsdWhereProductQuantityIsZeroAsync()).ReturnsAsync(new List<FridgeProduct>());
+            _fakeUnitOfWork.Mock.Setup(uow => uow.FridgeProduct.FindRecordsWhereProductQuantityIsZeroAsync()).ReturnsAsync(new List<FridgeProduct>());
 
             //Act
             var result = await _service.AddProductWhereEmptyAsync();
@@ -180,7 +180,7 @@ namespace Tests.Tests.Services
         public async Task AddProductWhereEmpty_ReturnsList()
         {
             //Arrange
-            _fakeUnitOfWork.Mock.Setup(uow => uow.FridgeProduct.FindRecorsdWhereProductQuantityIsZeroAsync()).ReturnsAsync(new List<FridgeProduct>()
+            _fakeUnitOfWork.Mock.Setup(uow => uow.FridgeProduct.FindRecordsWhereProductQuantityIsZeroAsync()).ReturnsAsync(new List<FridgeProduct>()
             {
                 new FridgeProduct(),
                 new FridgeProduct()
