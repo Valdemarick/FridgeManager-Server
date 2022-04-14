@@ -11,7 +11,6 @@ namespace Domain.Entities
         public string? Description { get; set; }
         public Guid FridgeModelId { get; set; }
         public FridgeModel FridgeModel { get; set; } = null!;
-
         public List<Product> Products { get; set; } = new();
         public List<FridgeProduct> FridgeProducts { get; set; } = new();
     }

@@ -6,12 +6,12 @@ namespace Application.Common.Interfaces.Contexts
 {
     public interface IApplicationDbContext
     {
-        public DbSet<Fridge> Fridges { get; set; }
-        public DbSet<FridgeModel> FridgeModels { get; set; }
-        public DbSet<Product> Products { get; set; }
-        public DbSet<FridgeProduct> FridgeProducts { get; set; }
+        DbSet<Fridge> Fridges { get; set; }
+        DbSet<FridgeModel> FridgeModels { get; set; }
+        DbSet<Product> Products { get; set; }
+        DbSet<FridgeProduct> FridgeProducts { get; set; }
+        DbSet<TEntity> Set<TEntity>() where TEntity : class;
 
-        public DbSet<TEntity> Set<TEntity>() where TEntity : class;
-        public Task<int> SaveChangesAsync();
+        Task<int> SaveChangesAsync();
     }
 }

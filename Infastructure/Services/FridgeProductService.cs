@@ -50,13 +50,11 @@ namespace Infastructure.Services
             return createdFridgeProductRecords;
         }
 
-        public async Task DeleteFridgeProductByIdAsync(Guid id) =>
-            await _unitOfWork.FridgeProduct.DeleteAsync(id);
+        public async Task DeleteFridgeProductByIdAsync(Guid id) => await _unitOfWork.FridgeProduct.DeleteAsync(id);
 
         public async Task<List<FridgeProductForCreationDto>> AddProductWhereEmptyAsync()
         {
-            var records = await _unitOfWork.FridgeProduct.FindRecorsdWhereProductQuantityIsZeroAsync();
-
+            var records = await _unitOfWork.FridgeProduct.FindRecordsWhereProductQuantityIsZeroAsync();
             foreach (var record in records)
             {
                 await DeleteFridgeProductByIdAsync(record.Id);
