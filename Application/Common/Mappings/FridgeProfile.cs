@@ -14,13 +14,9 @@ namespace Application.Common.Mappings
                 .ForMember(dest => dest.ProductionYear,
                 opt => opt.MapFrom(src => src.FridgeModel.ProductionYear));
 
-            CreateMap<FridgeForCreationDto, Fridge>()
-                .ForMember(dest => dest.FridgeModelId,
-                opt => opt.MapFrom(src => src.FridgeModelId));
+            CreateMap<FridgeForCreationDto, Fridge>();
 
-            CreateMap<FridgeForUpdateDto, Fridge>()
-                .ForMember(dest => dest.FridgeModelId,
-                opt => opt.MapFrom(src => src.FridgeModelId)).ReverseMap();
+            CreateMap<FridgeForUpdateDto, Fridge>().ReverseMap();
         }
     }
 }

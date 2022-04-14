@@ -12,9 +12,7 @@ namespace Application.Common.Mappings
 
             CreateMap<ProductForCreationDto, Product>();
 
-            CreateMap<ProductForUpdateDto, Product>()
-                .ForMember(dest => dest.Quantity,
-                opt => opt.MapFrom(src => src.Quantity)).ReverseMap();
+            CreateMap<ProductForUpdateDto, Product>().ReverseMap();
         }
     }
 }
