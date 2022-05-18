@@ -199,7 +199,7 @@ namespace Tests.Tests.Controllers
         public async Task DeleteFridgeByIdAsync_ValidGuidPasses_ReturnsNoContent()
         {
             //Act
-            var response = await _controller.DeleteFridgeById(new Guid());
+            var response = await _controller.DeleteFridgeByIdAsync(new Guid());
 
             //Assert 
             Assert.NotNull(response);

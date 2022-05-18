@@ -96,6 +96,9 @@ namespace Infastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<Guid>("FridgeModelId")
                         .HasColumnType("uniqueidentifier");
 
@@ -138,6 +141,10 @@ namespace Infastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.FridgeProduct", b =>
                 {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("FridgeId")
                         .HasColumnType("uniqueidentifier");
 
@@ -147,7 +154,9 @@ namespace Infastructure.Migrations
                     b.Property<int>("ProductQuantity")
                         .HasColumnType("int");
 
-                    b.HasKey("FridgeId", "ProductId");
+                    b.HasKey("Id");
+
+                    b.HasIndex("FridgeId");
 
                     b.HasIndex("ProductId");
 
@@ -165,10 +174,8 @@ namespace Infastructure.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
 
-                    b.Property<int?>("Quantity")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -209,15 +216,15 @@ namespace Infastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "00f2cadf-f0e9-4dda-a4b6-a391b22eec16",
-                            ConcurrencyStamp = "8b5c74c8-ef4c-44bf-9e3e-f8bcf2eac275",
+                            Id = "2fa30968-e023-4eb8-85e3-57ed86f0c9e3",
+                            ConcurrencyStamp = "c92f0a98-3eab-4557-8fc4-d4ed2c201974",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "75a6d9ae-5f6c-4d6f-904c-0c34580c317a",
-                            ConcurrencyStamp = "92adeefa-c3b4-427d-910f-ea2d621891b3",
+                            Id = "04afe6be-fdd0-422b-ac16-b93aa950fd91",
+                            ConcurrencyStamp = "e1d474fa-6bb8-46a9-9584-48ad8bd1f5fd",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         });
